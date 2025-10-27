@@ -1,0 +1,714 @@
+<!-- RESEARCH SHARING PLATFORM MODULE -->
+<!-- This section should be added to the main content area of enhanced-platform.html -->
+
+<div id="research-sharing-section" class="content-section" style="display: none;">
+  <h2>🌐 Research Community</h2>
+  <p class="section-description">
+    Share computational results, collaborate with researchers worldwide, and build upon each other's work. 
+    All shared content is public and citable.
+  </p>
+
+  <!-- Tab Navigation -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="research-feed">Research Feed</button>
+    <button class="tab-btn" data-tab="my-posts">My Posts</button>
+    <button class="tab-btn" data-tab="create-post">Create Post</button>
+    <button class="tab-btn" data-tab="collaborations">Collaborations</button>
+  </div>
+
+  <!-- RESEARCH FEED -->
+  <div id="research-feed" class="tab-content active">
+    
+    <!-- Filter/Search Bar -->
+    <div class="card">
+      <div class="search-filters">
+        <input type="text" id="research-search" placeholder="Search research posts..." class="search-input">
+        
+        <div class="filter-group">
+          <select id="filter-toolkit">
+            <option value="">All Toolkits</option>
+            <option value="retrosynthesis">Retrosynthesis</option>
+            <option value="antibody-docking">Antibody Docking</option>
+            <option value="cdr-generator">CDR Generator</option>
+            <option value="cellular-dynamics">Cellular Dynamics</option>
+            <option value="molecular-dynamics">Molecular Dynamics</option>
+            <option value="binding-prediction">Binding Prediction</option>
+          </select>
+          
+          <select id="filter-validation">
+            <option value="">All Validation Status</option>
+            <option value="computational">Computational Only</option>
+            <option value="in-progress">In Progress</option>
+            <option value="validated">Experimentally Validated</option>
+            <option value="published">Peer Reviewed</option>
+          </select>
+          
+          <select id="filter-sort">
+            <option value="recent">Most Recent</option>
+            <option value="popular">Most Popular</option>
+            <option value="discussed">Most Discussed</option>
+          </select>
+        </div>
+        
+        <button class="btn btn-primary" onclick="searchResearch()">
+          <span>🔍</span> Search
+        </button>
+      </div>
+    </div>
+
+    <!-- Research Posts Feed -->
+    <div id="research-posts-container">
+      <!-- Example Post 1 -->
+      <div class="research-card">
+        <div class="research-header">
+          <div>
+            <h3 class="research-title">High-Affinity Antibody Against SARS-CoV-2 Spike Protein</h3>
+            <div class="research-meta">
+              <div class="research-author">
+                <div class="user-avatar-small">D</div>
+                <span><strong>D. Ferguson</strong> • ComputeLab</span>
+              </div>
+              <span>•</span>
+              <span>2 days ago</span>
+              <span>•</span>
+              <span class="validation-badge validated">✓ Validated</span>
+            </div>
+          </div>
+          <div class="vote-counter">
+            <button class="vote-btn" onclick="votePost('post1', 1)">▲</button>
+            <span class="vote-count" id="votes-post1">47</span>
+            <button class="vote-btn" onclick="votePost('post1', -1)">▼</button>
+          </div>
+        </div>
+
+        <div class="research-tags">
+          <span class="tag">#antibody</span>
+          <span class="tag">#COVID19</span>
+          <span class="tag">#docking</span>
+          <span class="tag">#SPR-validated</span>
+        </div>
+
+        <div class="research-content">
+          <p>
+            Using ComputeLab's antibody-antigen docking tools (ClusPro + RosettaAntibody), 
+            we identified a novel CDR-H3 sequence with predicted K<sub>D</sub> = 2.3 nM against 
+            the SARS-CoV-2 spike protein RBD.
+          </p>
+          
+          <details>
+            <summary><strong>Computational Methods</strong></summary>
+            <ul>
+              <li>ClusPro rigid-body docking (1000 poses)</li>
+              <li>RosettaAntibody refinement (top 100 poses)</li>
+              <li>Interface analysis: 1847 Ų buried SASA, 16 H-bonds</li>
+              <li>CDR optimization via RAbD</li>
+            </ul>
+          </details>
+
+          <details>
+            <summary><strong>Experimental Validation ✓</strong></summary>
+            <ul style="color: var(--green);">
+              <li>✓ SPR confirmed K<sub>D</sub> = 3.1 nM (Biacore 8K)</li>
+              <li>✓ ELISA binding confirmed (EC<sub>50</sub> = 5.2 nM)</li>
+              <li>✓ Pseudovirus neutralization: IC<sub>50</sub> = 15 nM</li>
+              <li>✓ Cryo-EM structure validates binding mode (2.8Å)</li>
+            </ul>
+          </details>
+
+          <div class="file-attachments">
+            <div class="attachment-item">📄 antibody_sequence.fasta</div>
+            <div class="attachment-item">📊 SPR_sensorgrams.xlsx</div>
+            <div class="attachment-item">🧬 structure_model.pdb</div>
+          </div>
+        </div>
+
+        <div class="research-actions">
+          <button class="btn btn-sm btn-outline" onclick="commentOnPost('post1')">
+            <span>💬</span> Comment (12)
+          </button>
+          <button class="btn btn-sm btn-outline" onclick="sharePost('post1')">
+            <span>🔗</span> Share
+          </button>
+          <button class="btn btn-sm btn-outline" onclick="citePost('post1')">
+            <span>📚</span> Cite
+          </button>
+          <button class="btn btn-sm btn-outline" onclick="collaboratePost('post1')">
+            <span>🤝</span> Collaborate
+          </button>
+        </div>
+
+        <div class="comments-section" id="comments-post1" style="display: none;">
+          <!-- Comments will be loaded here -->
+        </div>
+      </div>
+
+      <!-- Example Post 2 -->
+      <div class="research-card">
+        <div class="research-header">
+          <div>
+            <h3 class="research-title">Cellular Dynamics Simulation Predicts KRAS Mutation Clonal Sweep</h3>
+            <div class="research-meta">
+              <div class="research-author">
+                <div class="user-avatar-small">S</div>
+                <span><strong>Dr. Sarah Chen</strong> • Stanford University</span>
+              </div>
+              <span>•</span>
+              <span>5 days ago</span>
+              <span>•</span>
+              <span class="validation-badge in-progress">🔬 In Progress</span>
+            </div>
+          </div>
+          <div class="vote-counter">
+            <button class="vote-btn" onclick="votePost('post2', 1)">▲</button>
+            <span class="vote-count" id="votes-post2">34</span>
+            <button class="vote-btn" onclick="votePost('post2', -1)">▼</button>
+          </div>
+        </div>
+
+        <div class="research-tags">
+          <span class="tag">#cellular-dynamics</span>
+          <span class="tag">#KRAS</span>
+          <span class="tag">#clonal-evolution</span>
+          <span class="tag">#cancer</span>
+        </div>
+
+        <div class="research-content">
+          <p>
+            Simulated KRAS G12D activation in single cell within polyclonal population (n=1000). 
+            Mutant clone achieved 87% population dominance within 120 hours. Model predicts 
+            selective advantage of 2.3x over wild-type.
+          </p>
+          
+          <p>
+            <strong>Current Status:</strong> Validating in cell culture (A549 line). 
+            Preliminary flow cytometry shows similar expansion kinetics. Full results expected in 2 weeks.
+          </p>
+
+          <div class="file-attachments">
+            <div class="attachment-item">📊 simulation_parameters.json</div>
+            <div class="attachment-item">📈 population_dynamics.png</div>
+          </div>
+        </div>
+
+        <div class="research-actions">
+          <button class="btn btn-sm btn-outline" onclick="commentOnPost('post2')">
+            <span>💬</span> Comment (8)
+          </button>
+          <button class="btn btn-sm btn-outline" onclick="sharePost('post2')">
+            <span>🔗</span> Share
+          </button>
+          <button class="btn btn-sm btn-outline" onclick="replicateStudy('post2')">
+            <span>🔄</span> Replicate
+          </button>
+        </div>
+      </div>
+
+      <!-- Example Post 3 -->
+      <div class="research-card">
+        <div class="research-header">
+          <div>
+            <h3 class="research-title">CDR-H3 Library Screening: 85% Expression Rate Achieved</h3>
+            <div class="research-meta">
+              <div class="research-author">
+                <div class="user-avatar-small">M</div>
+                <span><strong>Prof. Michael Rodriguez</strong> • MIT</span>
+              </div>
+              <span>•</span>
+              <span>1 week ago</span>
+              <span>•</span>
+              <span class="validation-badge computational">⚠️ Computational</span>
+            </div>
+          </div>
+          <div class="vote-counter">
+            <button class="vote-btn" onclick="votePost('post3', 1)">▲</button>
+            <span class="vote-count" id="votes-post3">28</span>
+            <button class="vote-btn" onclick="votePost('post3', -1)">▼</button>
+          </div>
+        </div>
+
+        <div class="research-tags">
+          <span class="tag">#CDR-generation</span>
+          <span class="tag">#ABGen</span>
+          <span class="tag">#high-throughput</span>
+        </div>
+
+        <div class="research-content">
+          <p>
+            Generated 1000 CDR-H3 sequences using ComputeLab's ABGen model. 
+            Filtered for developability (85% pass). Currently expressing top 100 
+            candidates in mammalian cells.
+          </p>
+          
+          <p>
+            <strong>Seeking collaborators</strong> with expertise in high-throughput 
+            binding assays for validation phase.
+          </p>
+        </div>
+
+        <div class="research-actions">
+          <button class="btn btn-sm btn-outline" onclick="commentOnPost('post3')">
+            <span>💬</span> Comment (15)
+          </button>
+          <button class="btn btn-sm btn-primary" onclick="collaboratePost('post3')">
+            <span>🤝</span> Collaborate
+          </button>
+        </div>
+      </div>
+
+      <!-- Load More Button -->
+      <div style="text-align: center; margin: 24px 0;">
+        <button class="btn btn-outline" onclick="loadMorePosts()">
+          Load More Posts
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY POSTS -->
+  <div id="my-posts" class="tab-content">
+    <div class="card">
+      <h3>My Research Posts</h3>
+      <div id="user-posts-container">
+        <p style="color: var(--muted);">You haven't posted any research yet. Create your first post!</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Draft Posts</h3>
+      <div id="draft-posts-container">
+        <p style="color: var(--muted);">No draft posts.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Statistics</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="user-posts-count">0</div>
+          <div class="stat-label">Total Posts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="user-votes-received">0</div>
+          <div class="stat-label">Total Upvotes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="user-comments-received">0</div>
+          <div class="stat-label">Comments Received</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="user-citations">0</div>
+          <div class="stat-label">Citations</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE POST -->
+  <div id="create-post" class="tab-content">
+    <div class="card">
+      <h3>Share Your Research</h3>
+      
+      <div class="alert alert-info">
+        <strong>ℹ️ Posting Guidelines:</strong> Share computational results, methods, and validations. 
+        Be honest about validation status. Include methods details for reproducibility.
+      </div>
+
+      <div class="form-group">
+        <label>Title *</label>
+        <input type="text" id="post-title" placeholder="Descriptive title of your research">
+      </div>
+
+      <div class="form-group">
+        <label>Toolkit Used *</label>
+        <select id="post-toolkit">
+          <option value="">Select toolkit...</option>
+          <option value="retrosynthesis">Retrosynthesis Mapping</option>
+          <option value="antibody-docking">Antibody-Antigen Docking</option>
+          <option value="cdr-generator">CDR Fragment Generator</option>
+          <option value="cellular-dynamics">Cellular Dynamics Simulation</option>
+          <option value="molecular-dynamics">Molecular Dynamics</option>
+          <option value="binding-prediction">Binding Affinity Prediction</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Validation Status *</label>
+        <select id="post-validation">
+          <option value="computational">⚠️ Computational Only (No experiments yet)</option>
+          <option value="in-progress">🔬 In Progress (Experiments underway)</option>
+          <option value="validated">✓ Experimentally Validated</option>
+          <option value="published">📄 Peer Reviewed & Published</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Tags</label>
+        <input type="text" id="post-tags" placeholder="e.g., antibody, COVID19, docking (comma-separated)">
+        <small>Add up to 10 tags to help others find your research</small>
+      </div>
+
+      <div class="form-group">
+        <label>Abstract / Summary *</label>
+        <textarea id="post-summary" rows="4" 
+          placeholder="Brief summary of your computational work and key findings..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Computational Methods *</label>
+        <textarea id="post-methods" rows="6" 
+          placeholder="Describe the computational methods you used. Include:
+- Which ComputeLab tools/algorithms
+- Parameters and settings
+- Number of runs/poses/sequences
+- Scoring functions
+- Any modifications or customizations"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Results</label>
+        <textarea id="post-results" rows="6" 
+          placeholder="Describe your computational results:
+- Key metrics (KD, scores, energies, etc.)
+- Top predictions
+- Interesting findings
+- Comparisons"></textarea>
+      </div>
+
+      <div class="form-group" id="validation-section">
+        <label>Experimental Validation (if applicable)</label>
+        <textarea id="post-validation-details" rows="6" 
+          placeholder="If you've validated experimentally, describe:
+- Methods used (SPR, ELISA, cell assays, animal models, etc.)
+- Results and how they compare to predictions
+- Any discrepancies
+- Protocols or references"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Discussion & Implications</label>
+        <textarea id="post-discussion" rows="4" 
+          placeholder="What do your results mean? Future directions? Limitations?"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Attach Files</label>
+        <input type="file" id="post-files" multiple>
+        <small>Attach: sequences, structures, data files, plots, protocols (max 10MB each)</small>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="post-seeking-collab">
+          I'm seeking collaborators for this project
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="post-terms" required>
+          I confirm this work is original and I have permission to share it publicly *
+        </label>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary btn-lg" onclick="publishPost()">
+          <span>🚀</span> Publish Post
+        </button>
+        <button class="btn btn-outline" onclick="saveDraft()">
+          <span>💾</span> Save as Draft
+        </button>
+        <button class="btn btn-outline" onclick="previewPost()">
+          <span>👁️</span> Preview
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLLABORATIONS -->
+  <div id="collaborations" class="tab-content">
+    <div class="card">
+      <h3>Active Collaborations</h3>
+      <div id="active-collabs">
+        <p style="color: var(--muted);">No active collaborations yet.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Collaboration Invitations</h3>
+      <div id="collab-invites">
+        <p style="color: var(--muted);">No pending invitations.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Find Collaborators</h3>
+      <input type="text" id="collab-search" placeholder="Search by expertise, institution, or research area...">
+      <button class="btn btn-primary" onclick="searchCollaborators()">Search</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Citation Modal -->
+<div id="citation-modal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeCitationModal()">&times;</span>
+    <h2>📚 Cite This Research</h2>
+    
+    <div class="citation-format">
+      <h4>APA Format</h4>
+      <div class="citation-box" id="citation-apa">
+        Ferguson, D. (2025). High-Affinity Antibody Against SARS-CoV-2 Spike Protein. 
+        ComputeLab Research Community. Post ID: post_12345.
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="copyCitation('apa')">Copy</button>
+    </div>
+
+    <div class="citation-format">
+      <h4>BibTeX</h4>
+      <div class="citation-box" id="citation-bibtex">
+@misc{ferguson2025antibody,<br>
+  author = {Ferguson, D.},<br>
+  title = {High-Affinity Antibody Against SARS-CoV-2 Spike Protein},<br>
+  year = {2025},<br>
+  howpublished = {ComputeLab Research Community},<br>
+  note = {Post ID: post_12345}<br>
+}
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="copyCitation('bibtex')">Copy</button>
+    </div>
+  </div>
+</div>
+
+<!-- Additional CSS for research sharing -->
+<style>
+.research-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 20px 0;
+  transition: all 0.3s;
+}
+
+.research-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.research-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.research-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0 0 8px;
+}
+
+.research-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.user-avatar-small {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #7dd3fc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+  font-size: 13px;
+}
+
+.validation-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.validation-badge.validated {
+  background: rgba(52, 211, 153, 0.2);
+  color: var(--green);
+}
+
+.validation-badge.in-progress {
+  background: rgba(251, 191, 36, 0.2);
+  color: var(--yellow);
+}
+
+.validation-badge.computational {
+  background: rgba(251, 113, 133, 0.2);
+  color: #fca5a5;
+}
+
+.vote-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.vote-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.vote-btn:hover {
+  color: var(--accent);
+}
+
+.vote-count {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 16px;
+}
+
+.research-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.research-content {
+  margin: 16px 0;
+  line-height: 1.8;
+}
+
+.research-content details {
+  margin: 12px 0;
+  padding: 12px;
+  background: var(--panel);
+  border-radius: 8px;
+}
+
+.research-content summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.file-attachments {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.attachment-item {
+  padding: 8px 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.attachment-item:hover {
+  border-color: var(--accent);
+  background: rgba(125, 211, 252, 0.1);
+}
+
+.research-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.comments-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.search-filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 250px;
+  padding: 10px 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.filter-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-group select {
+  padding: 8px 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.citation-format {
+  margin: 20px 0;
+}
+
+.citation-box {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .research-header {
+    flex-direction: column;
+  }
+  
+  .vote-counter {
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    margin-top: 12px;
+  }
+  
+  .search-filters {
+    flex-direction: column;
+  }
+  
+  .search-input {
+    width: 100%;
+  }
+}
+</style>

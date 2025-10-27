@@ -1,0 +1,4133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ComputeLab • Advanced Computational Platform</title>
+<meta name="theme-color" content="#0f172a">
+<meta name="description" content="Comprehensive computational platform for molecular dynamics, retrosynthesis, structure prediction, and more">
+
+<!-- External Libraries -->
+<script src="https://unpkg.com/3dmol@2.4.2/build/3dmol-min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+
+<style>
+:root {
+  --bg: #0b1220;
+  --panel: #0f172a;
+  --card: #0a0f1a;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --accent: #7dd3fc;
+  --line: #1f2937;
+  --green: #34d399;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --orange: #fb923c;
+  --purple: #a78bfa;
+  --blue: #60a5fa;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Header */
+header {
+  padding: 40px 20px;
+  background: radial-gradient(1200px 600px at 15% -10%, #1d2a4a, transparent 60%),
+              radial-gradient(1000px 500px at 120% 10%, #2a1e4a, transparent 60%);
+  border-bottom: 1px solid var(--line);
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #2563eb, #7dd3fc);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 24px;
+  color: white;
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(135deg, #7dd3fc, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  color: #93c5fd;
+  font-weight: 600;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid var(--green);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.9); }
+}
+
+/* Main Layout */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Stats Dashboard */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--purple));
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+  border-color: var(--accent);
+}
+
+.stat-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--accent);
+  font-family: var(--mono);
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* Main Grid */
+.main-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Sidebar */
+.sidebar {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  position: sticky;
+  top: 20px;
+}
+
+.sidebar h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.toolkit-list {
+  list-style: none;
+}
+
+.toolkit-item {
+  padding: 12px 14px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.toolkit-item:hover {
+  background: rgba(125, 211, 252, 0.1);
+  border-color: var(--accent);
+}
+
+.toolkit-item.active {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: white;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.toolkit-icon {
+  font-size: 20px;
+}
+
+/* Content Area */
+.content-area {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 600px;
+}
+
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+  animation: fadeIn 0.4s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--line);
+}
+
+.section-title {
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-description {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Cards */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.card h3, .card h4 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Form Elements */
+.form-grid {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+label {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"],
+textarea,
+select {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: var(--mono);
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.1);
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+  font-family: var(--mono);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: white;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #059669, #047857);
+  color: white;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: white;
+}
+
+.btn-purple {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  color: white;
+}
+
+.btn-orange {
+  background: linear-gradient(135deg, #fb923c, #f97316);
+  color: white;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.btn-outline:hover {
+  background: rgba(125, 211, 252, 0.1);
+  border-color: var(--accent);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--line);
+  padding-bottom: 0;
+}
+
+.tab-btn {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--muted);
+  transition: all 0.2s;
+  position: relative;
+  bottom: -2px;
+}
+
+.tab-btn:hover {
+  color: var(--accent);
+}
+
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.3s;
+}
+
+/* 3D Viewer */
+.viewer-container {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 16px 0;
+}
+
+.viewer {
+  width: 100%;
+  height: 500px;
+  position: relative;
+}
+
+.viewer-controls {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid var(--line);
+}
+
+/* Results */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.result-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.result-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--green);
+  font-family: var(--mono);
+  margin-bottom: 8px;
+}
+
+.result-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Alerts */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.alert-info {
+  background: rgba(96, 165, 250, 0.1);
+  border: 1px solid var(--blue);
+  color: var(--blue);
+}
+
+.alert-success {
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid var(--green);
+  color: var(--green);
+}
+
+.alert-warning {
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid var(--yellow);
+  color: var(--yellow);
+}
+
+.alert-error {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+
+/* Pills/Badges */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pill-new {
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+
+.pill-beta {
+  background: rgba(251, 191, 36, 0.1);
+  color: var(--yellow);
+  border: 1px solid var(--yellow);
+}
+
+.pill-hot {
+  background: rgba(248, 113, 113, 0.1);
+  color: var(--red);
+  border: 1px solid var(--red);
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #7dd3fc);
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+
+/* Retrosynthesis Specific */
+.retro-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.pathway-card {
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.pathway-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.pathway-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.pathway-score {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--green);
+  font-family: var(--mono);
+}
+
+.reaction-step {
+  background: rgba(125, 211, 252, 0.05);
+  border-left: 3px solid var(--accent);
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 6px;
+}
+
+.reaction-arrow {
+  text-align: center;
+  color: var(--accent);
+  font-size: 20px;
+  margin: 8px 0;
+}
+
+.molecule-display {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.smiles-box {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  word-break: break-all;
+  color: var(--accent);
+  margin: 8px 0;
+}
+
+/* Table */
+.table-container {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  background: rgba(37, 99, 235, 0.1);
+  padding: 12px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--accent);
+  border-bottom: 2px solid var(--line);
+  position: sticky;
+  top: 0;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+tr:hover {
+  background: rgba(125, 211, 252, 0.05);
+}
+
+/* Loading Spinner */
+.spinner {
+  border: 3px solid var(--line);
+  border-top: 3px solid var(--accent);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px;
+  color: var(--muted);
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  padding: 16px 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+  max-width: 90%;
+  animation: slideDown 0.3s;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Job Queue */
+.job-queue {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 24px;
+}
+
+.job-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.job-item:last-child {
+  border-bottom: none;
+}
+
+.job-status {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-running {
+  background: rgba(96, 165, 250, 0.2);
+  color: var(--blue);
+}
+
+.status-completed {
+  background: rgba(52, 211, 153, 0.2);
+  color: var(--green);
+}
+
+.status-queued {
+  background: rgba(251, 191, 36, 0.2);
+  color: var(--yellow);
+}
+
+.status-failed {
+  background: rgba(248, 113, 113, 0.2);
+  color: var(--red);
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 24px;
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 40px;
+  border-top: 1px solid var(--line);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    position: relative;
+    top: 0;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+/* Workflow Selector */
+.workflow-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.workflow-option {
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+}
+
+.workflow-option:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.workflow-option.active {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(125, 211, 252, 0.1));
+  border-color: var(--accent);
+}
+
+.workflow-option h4 {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 16px;
+}
+
+.workflow-option p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Pipeline Visualization */
+.pipeline-visualization {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 24px 0;
+  padding: 20px;
+  background: var(--card);
+  border-radius: 10px;
+}
+
+.pipeline-step-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.pipeline-step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.pipeline-step-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--panel);
+  border: 3px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: all 0.3s;
+}
+
+.pipeline-step-item.active .pipeline-step-icon {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(125, 211, 252, 0.2));
+  box-shadow: 0 0 20px rgba(125, 211, 252, 0.4);
+  animation: pulse-glow 2s infinite;
+}
+
+.pipeline-step-item.completed .pipeline-step-icon {
+  border-color: var(--green);
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.2), rgba(16, 185, 129, 0.2));
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(125, 211, 252, 0.4); }
+  50% { box-shadow: 0 0 30px rgba(125, 211, 252, 0.6); }
+}
+
+.pipeline-step-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pipeline-step-item.active .pipeline-step-label {
+  color: var(--accent);
+}
+
+.pipeline-step-item.completed .pipeline-step-label {
+  color: var(--green);
+}
+
+.pipeline-connector {
+  flex: 1;
+  height: 3px;
+  background: var(--line);
+  margin: 0 16px;
+  transition: all 0.5s;
+}
+
+.pipeline-connector.active {
+  background: linear-gradient(90deg, var(--accent), var(--green));
+  box-shadow: 0 0 10px rgba(125, 211, 252, 0.5);
+}
+
+/* Scientific Disclaimer */
+.disclaimer {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));
+  border: 2px solid var(--yellow);
+  border-left: 6px solid var(--yellow);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 24px 0;
+  position: relative;
+}
+
+.disclaimer-icon {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 32px;
+}
+
+.disclaimer-content {
+  margin-left: 50px;
+}
+
+.disclaimer h3 {
+  margin: 0 0 12px;
+  color: var(--yellow);
+  font-size: 18px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.disclaimer p {
+  margin: 8px 0;
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.disclaimer strong {
+  color: var(--yellow);
+  font-weight: 700;
+}
+
+.disclaimer ul {
+  margin: 12px 0;
+  padding-left: 20px;
+  color: var(--text);
+}
+
+.disclaimer li {
+  margin: 6px 0;
+  line-height: 1.6;
+}
+
+/* Scientific Disclaimer */
+.disclaimer {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));
+  border: 2px solid var(--yellow);
+  border-left: 6px solid var(--yellow);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 24px 0;
+  position: relative;
+}
+
+.disclaimer-icon {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 32px;
+}
+
+.disclaimer-content {
+  margin-left: 50px;
+}
+
+.disclaimer h3 {
+  margin: 0 0 12px;
+  color: var(--yellow);
+  font-size: 18px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.disclaimer p {
+  margin: 8px 0;
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.disclaimer strong {
+  color: var(--yellow);
+  font-weight: 700;
+}
+
+.disclaimer ul {
+  margin: 12px 0;
+  padding-left: 20px;
+  color: var(--text);
+}
+
+.disclaimer li {
+  margin: 6px 0;
+  line-height: 1.6;
+}
+
+/* CDR and Antibody Specific Styles */
+.cdr-regions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.cdr-region-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.cdr-region-card h4 {
+  margin: 0 0 12px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.cdr-item {
+  margin: 8px 0;
+  padding: 8px;
+  background: rgba(125, 211, 252, 0.05);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.cdr-item strong {
+  color: var(--accent);
+  margin-right: 8px;
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--green);
+  letter-spacing: 1px;
+}
+
+.epitope-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.residue-badge {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(125, 211, 252, 0.2));
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* CDR and Antibody Specific Styles */
+.cdr-regions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.cdr-region-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.cdr-region-card h4 {
+  margin: 0 0 12px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.cdr-item {
+  margin: 8px 0;
+  padding: 8px;
+  background: rgba(125, 211, 252, 0.05);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.cdr-item strong {
+  color: var(--accent);
+  margin-right: 8px;
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--green);
+  letter-spacing: 1px;
+}
+
+.epitope-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.residue-badge {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(125, 211, 252, 0.2));
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Authentication & User Styles */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.user-profile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.user-profile:hover {
+  background: var(--card);
+  border-color: var(--accent);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #7dd3fc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+  font-size: 16px;
+}
+
+.user-info-dropdown {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.user-role-display {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.user-menu-trigger {
+  font-size: 10px;
+  color: var(--muted);
+  transition: transform 0.3s;
+}
+
+.user-profile:hover .user-menu-trigger {
+  transform: rotate(180deg);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 220px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.dropdown-item:hover {
+  background: var(--card);
+  color: var(--accent);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 8px 0;
+}
+
+/* Research Sharing Styles */
+.research-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px 0;
+  transition: all 0.3s;
+}
+
+.research-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.research-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 12px;
+}
+
+.research-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0 0 8px;
+}
+
+.research-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.research-author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.research-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.tag {
+  background: rgba(125, 211, 252, 0.1);
+  border: 1px solid rgba(125, 211, 252, 0.3);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.research-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.vote-counter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  background: var(--panel);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Cellular Dynamics Specific Styles */
+.cell-population-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.cell-type-card {
+  background: var(--panel);
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.cell-type-card:hover {
+  border-color: var(--accent);
+  transform: scale(1.05);
+}
+
+.cell-type-card.selected {
+  border-color: var(--green);
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.1), rgba(16, 185, 129, 0.1));
+}
+
+.cell-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.mutation-input-group {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  margin: 12px 0;
+}
+
+.gene-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.gene-chip {
+  padding: 6px 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.gene-chip:hover {
+  border-color: var(--accent);
+  background: rgba(125, 211, 252, 0.1);
+}
+
+.gene-chip.selected {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(125, 211, 252, 0.2));
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.timeline-container {
+  background: var(--panel);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.timeline-track {
+  height: 60px;
+  background: var(--card);
+  border-radius: 8px;
+  position: relative;
+  margin: 20px 0;
+}
+
+.timeline-marker {
+  position: absolute;
+  width: 4px;
+  height: 100%;
+  background: var(--accent);
+  cursor: move;
+}
+
+.timeline-event {
+  position: absolute;
+  padding: 4px 12px;
+  background: var(--purple);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  transform: translateY(-100%);
+  margin-top: -8px;
+}
+
+.simulation-canvas {
+  width: 100%;
+  height: 500px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cell-visual {
+  position: absolute;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.pathophysiology-map {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px 0;
+}
+
+.organelle-status {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.organelle-card {
+  background: var(--card);
+  border-left: 4px solid var(--green);
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.organelle-card.dysfunctional {
+  border-left-color: var(--red);
+}
+
+.organelle-card.stressed {
+  border-left-color: var(--yellow);
+}
+
+@media (max-width: 768px) {
+  .pipeline-visualization {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .pipeline-step-container {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .pipeline-connector {
+    width: 3px;
+    height: 40px;
+    margin: 8px 0;
+  }
+  
+  .workflow-selector {
+    grid-template-columns: 1fr;
+  }
+  
+  .disclaimer-content {
+    margin-left: 0;
+    margin-top: 40px;
+  }
+  
+  .cdr-regions {
+    grid-template-columns: 1fr;
+  }
+  
+  .user-profile {
+    padding: 6px 12px;
+  }
+  
+  .user-name {
+    display: none;
+  }
+  
+  .cell-population-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Authentication Modal -->
+<div id="auth-modal" class="modal" style="display: none;">
+  <div class="modal-content" style="max-width: 450px;">
+    <span class="modal-close" onclick="closeAuthModal()">&times;</span>
+    <h2 id="auth-modal-title">Login to ComputeLab</h2>
+    
+    <div id="login-panel">
+      <div class="form-group">
+        <label>Email or Username</label>
+        <input type="text" id="login-username" placeholder="Enter your email or username">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="Enter your password">
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-primary" onclick="performLogin()" style="flex: 1;">Login</button>
+        <button class="btn btn-outline" onclick="switchToRegister()">Register</button>
+      </div>
+    </div>
+    
+    <div id="register-panel" style="display: none;">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="register-name" placeholder="Enter your full name">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="register-email" placeholder="your.email@institution.edu">
+      </div>
+      <div class="form-group">
+        <label>Institution</label>
+        <input type="text" id="register-institution" placeholder="University or Company">
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <select id="register-role">
+          <option>Graduate Student</option>
+          <option>Postdoc</option>
+          <option>Principal Investigator</option>
+          <option>Industry Scientist</option>
+          <option>Undergraduate</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="register-password" placeholder="Create a password">
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-primary" onclick="performRegister()" style="flex: 1;">Create Account</button>
+        <button class="btn btn-outline" onclick="switchToLogin()">Back to Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="header-content">
+    <div class="logo-area">
+      <div class="logo">CL</div>
+      <div>
+        <h1>ComputeLab</h1>
+        <div class="tagline">Advanced Computational Platform • Developed by D. Ferguson</div>
+      </div>
+    </div>
+    
+    <!-- User Section -->
+    <div class="user-section">
+      <div id="user-logged-out" class="user-controls">
+        <button class="btn btn-sm btn-outline" onclick="openAuthModal('login')">Login</button>
+        <button class="btn btn-sm btn-primary" onclick="openAuthModal('register')">Register</button>
+      </div>
+      
+      <div id="user-logged-in" class="user-profile" style="display: none;">
+        <div class="user-avatar" id="user-avatar">U</div>
+        <div class="user-info-dropdown">
+          <div class="user-name" id="user-name-display">Guest User</div>
+          <div class="user-role-display" id="user-role-display">Not logged in</div>
+        </div>
+        <div class="user-menu-trigger" onclick="toggleUserMenu()">▼</div>
+        
+        <!-- User Dropdown Menu -->
+        <div id="user-menu" class="user-dropdown" style="display: none;">
+          <div class="dropdown-item" onclick="showMyProfile()">
+            <span>👤</span> My Profile
+          </div>
+          <div class="dropdown-item" onclick="showMyResearch()">
+            <span>📊</span> My Research
+          </div>
+          <div class="dropdown-item" onclick="showUsageStats()">
+            <span>📈</span> Usage Statistics
+          </div>
+          <div class="dropdown-item" onclick="navigateTo('research-sharing')">
+            <span>🔬</span> Research Community
+          </div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" onclick="performLogout()">
+            <span>🚪</span> Logout
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <!-- Stats Dashboard -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">✓</div>
+      <div class="stat-value" id="stat-completed">2,847</div>
+      <div class="stat-label">Jobs Completed</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-value" id="stat-active">12</div>
+      <div class="stat-label">Active Jobs</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-value" id="stat-success">98.7%</div>
+      <div class="stat-label">Success Rate</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">💾</div>
+      <div class="stat-value" id="stat-data">847TB</div>
+      <div class="stat-label">Data Processed</div>
+    </div>
+  </div>
+
+  <!-- Scientific Disclaimer -->
+  <div class="disclaimer">
+    <div class="disclaimer-icon">⚠️</div>
+    <div class="disclaimer-content">
+      <h3>⚗️ Scientific Validation Required</h3>
+      <p>
+        <strong>IMPORTANT:</strong> All computational predictions, simulations, and in silico analyses generated by this platform are theoretical models and require experimental validation.
+      </p>
+      <p>
+        <strong>Users must validate all results through appropriate experimental methods:</strong>
+      </p>
+      <ul>
+        <li><strong>In Vitro Studies:</strong> Biochemical assays, binding studies, enzymatic activity tests, cell-based assays</li>
+        <li><strong>In Vivo Studies:</strong> Animal models, pharmacokinetics, toxicity studies, efficacy evaluations</li>
+        <li><strong>Clinical Validation:</strong> Human trials when applicable (Phase I-IV)</li>
+      </ul>
+      <p>
+        <strong>Computational predictions should be used as:</strong> Research guidance tools, hypothesis generators, and experimental design aids—<strong>NOT</strong> as definitive proof of biological activity, safety, or efficacy.
+      </p>
+      <p style="margin-top: 12px; font-size: 13px; color: var(--muted);">
+        ℹ️ By using this platform, you acknowledge that computational results require rigorous experimental validation before any practical application, publication, or therapeutic use.
+      </p>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="main-grid">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h3>Computational Toolkits</h3>
+      <ul class="toolkit-list">
+        <li class="toolkit-item active" data-section="retrosynthesis">
+          <span class="toolkit-icon">🔬</span>
+          <span>Retrosynthesis <span class="pill pill-hot">HOT</span></span>
+        </li>
+        <li class="toolkit-item" data-section="molecular-dynamics">
+          <span class="toolkit-icon">🧬</span>
+          <span>Molecular Dynamics</span>
+        </li>
+        <li class="toolkit-item" data-section="structure-prediction">
+          <span class="toolkit-icon">📐</span>
+          <span>Structure Prediction</span>
+        </li>
+        <li class="toolkit-item" data-section="quantum-chemistry">
+          <span class="toolkit-icon">⚛️</span>
+          <span>Quantum Chemistry</span>
+        </li>
+        <li class="toolkit-item" data-section="machine-learning">
+          <span class="toolkit-icon">🤖</span>
+          <span>Machine Learning</span>
+        </li>
+        <li class="toolkit-item" data-section="molecular-docking">
+          <span class="toolkit-icon">🎯</span>
+          <span>Molecular Docking</span>
+        </li>
+        <li class="toolkit-item" data-section="genomics">
+          <span class="toolkit-icon">🧪</span>
+          <span>Genomics Analysis</span>
+        </li>
+        <li class="toolkit-item" data-section="protein-engineering">
+          <span class="toolkit-icon">🔗</span>
+          <span>Protein Engineering</span>
+        </li>
+        <li class="toolkit-item" data-section="binding-prediction">
+          <span class="toolkit-icon">🧬</span>
+          <span>Binding Prediction <span class="pill pill-new">NEW</span></span>
+        </li>
+        <li class="toolkit-item" data-section="antibody-docking">
+          <span class="toolkit-icon">💉</span>
+          <span>Antibody Docking <span class="pill pill-new">NEW</span></span>
+        </li>
+        <li class="toolkit-item" data-section="cdr-generator">
+          <span class="toolkit-icon">🔬</span>
+          <span>CDR Generator <span class="pill pill-new">NEW</span></span>
+        </li>
+        <li class="toolkit-item" data-section="cellular-dynamics">
+          <span class="toolkit-icon">🦠</span>
+          <span>Cellular Dynamics <span class="pill pill-new">NEW</span></span>
+        </li>
+        <li class="toolkit-item" data-section="research-sharing">
+          <span class="toolkit-icon">🌐</span>
+          <span>Research Community <span class="pill pill-beta">BETA</span></span>
+        </li>
+        <li class="toolkit-item" data-section="simulation">
+          <span class="toolkit-icon">⚙️</span>
+          <span>Monte Carlo</span>
+        </li>
+        <li class="toolkit-item" data-section="visualization">
+          <span class="toolkit-icon">📈</span>
+          <span>Visualization</span>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Content Area -->
+    <main class="content-area">
+      <!-- Retrosynthesis Section -->
+      <section id="retrosynthesis" class="section active">
+        <div class="section-header">
+          <div class="section-title">
+            <span>🔬</span>
+            Retrosynthesis Mapping
+            <span class="pill pill-hot">HOT</span>
+          </div>
+          <p class="section-description">
+            AI-powered retrosynthetic analysis to plan optimal synthetic routes for target molecules. 
+            Generate multiple pathways with feasibility scores and commercially available starting materials.
+          </p>
+        </div>
+
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="retro-input">Input</button>
+          <button class="tab-btn" data-tab="retro-results">Results</button>
+          <button class="tab-btn" data-tab="retro-analysis">Analysis</button>
+          <button class="tab-btn" data-tab="retro-export">Export</button>
+        </div>
+
+        <!-- Input Tab -->
+        <div id="retro-input" class="tab-content active">
+          <div class="card">
+            <h3>Target Molecule</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>SMILES String</label>
+                <textarea id="retro-smiles" placeholder="Enter SMILES notation (e.g., CC(=O)Oc1ccccc1C(=O)O for Aspirin)">CC(=O)Oc1ccccc1C(=O)O</textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Or Upload Structure File</label>
+                <input type="file" id="retro-file" accept=".mol,.sdf,.pdb">
+              </div>
+
+              <div class="form-group">
+                <label>Number of Pathways</label>
+                <select id="retro-pathways">
+                  <option value="5">5 pathways</option>
+                  <option value="10" selected>10 pathways</option>
+                  <option value="20">20 pathways</option>
+                  <option value="50">50 pathways</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Maximum Steps</label>
+                <input type="number" id="retro-max-steps" value="5" min="1" max="10">
+              </div>
+
+              <div class="form-group">
+                <label>Retrosynthesis Model</label>
+                <select id="retro-model">
+                  <option value="neuralsym">NeuralSym (Transformer)</option>
+                  <option value="retrostar">RetroStar (Monte Carlo Tree Search)</option>
+                  <option value="seq2seq">Seq2Seq (RNN)</option>
+                  <option value="graph2graph">Graph2Graph (GNN)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Filter Options</label>
+                <select id="retro-filter">
+                  <option value="commercial">Commercially Available Only</option>
+                  <option value="building-blocks">Building Blocks</option>
+                  <option value="all">All Starting Materials</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="alert alert-info">
+              ℹ️ The system will analyze disconnection strategies and propose synthetically feasible routes
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="runRetrosynthesis()">
+                <span>🚀</span> Generate Pathways
+              </button>
+              <button class="btn btn-outline" onclick="loadRetroExample()">
+                <span>📋</span> Load Example
+              </button>
+              <button class="btn btn-outline" onclick="clearRetro()">
+                <span>🗑️</span> Clear
+              </button>
+            </div>
+
+            <div id="retro-loading" class="loading" style="display: none;">
+              <div class="spinner"></div>
+              <p>Analyzing retrosynthetic pathways...</p>
+            </div>
+          </div>
+
+          <!-- Molecule Visualization -->
+          <div class="card">
+            <h3>Target Structure Preview</h3>
+            <div class="viewer-container">
+              <div id="viewer-retro-target" class="viewer"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Tab -->
+        <div id="retro-results" class="tab-content">
+          <div class="alert alert-success" id="retro-success" style="display: none;">
+            ✓ Found <span id="retro-count">0</span> viable synthetic pathways
+          </div>
+
+          <div id="retro-pathways-container" class="retro-grid">
+            <!-- Pathways will be inserted here -->
+          </div>
+        </div>
+
+        <!-- Analysis Tab -->
+        <div id="retro-analysis" class="tab-content">
+          <div class="card">
+            <h3>Pathway Comparison</h3>
+            <div id="retro-comparison-chart" style="height: 400px;"></div>
+          </div>
+
+          <div class="card">
+            <h3>Synthetic Accessibility</h3>
+            <div class="results-grid">
+              <div class="result-card">
+                <div class="result-value" id="sa-score">6.8</div>
+                <div class="result-label">SA Score</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value" id="complexity">4.2</div>
+                <div class="result-label">Complexity</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value" id="avg-steps">3.5</div>
+                <div class="result-label">Avg Steps</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value" id="success-prob">78%</div>
+                <div class="result-label">Success Probability</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Common Starting Materials</h3>
+            <div class="table-container">
+              <table id="starting-materials-table">
+                <thead>
+                  <tr>
+                    <th>Material</th>
+                    <th>SMILES</th>
+                    <th>Frequency</th>
+                    <th>Availability</th>
+                    <th>Cost</th>
+                  </tr>
+                </thead>
+                <tbody id="starting-materials-body">
+                  <!-- Will be populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export Tab -->
+        <div id="retro-export" class="tab-content">
+          <div class="card">
+            <h3>Export Options</h3>
+            <div class="btn-group">
+              <button class="btn btn-success" onclick="exportRetroJSON()">
+                <span>📄</span> Export JSON
+              </button>
+              <button class="btn btn-success" onclick="exportRetroCSV()">
+                <span>📊</span> Export CSV
+              </button>
+              <button class="btn btn-success" onclick="exportRetroPDF()">
+                <span>📑</span> Export PDF Report
+              </button>
+              <button class="btn btn-outline" onclick="exportRetroSMILES()">
+                <span>🧪</span> Export SMILES
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Share Results</h3>
+            <div class="form-group">
+              <label>Shareable Link</label>
+              <input type="text" id="share-link" readonly value="https://computelab.io/retro/abc123xyz">
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-outline" onclick="copyShareLink()">
+                <span>📋</span> Copy Link
+              </button>
+              <button class="btn btn-outline" onclick="shareEmail()">
+                <span>📧</span> Email
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Molecular Dynamics Section -->
+      <section id="molecular-dynamics" class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span>🧬</span>
+            Molecular Dynamics Simulation
+          </div>
+          <p class="section-description">
+            GPU-accelerated MD simulations with advanced force fields (AMBER, CHARMM, GROMOS)
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Simulation Setup</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Force Field</label>
+              <select id="md-forcefield">
+                <option>AMBER ff14SB</option>
+                <option>CHARMM36</option>
+                <option>GROMOS54a7</option>
+                <option>OPLS-AA</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Simulation Time (ns)</label>
+              <input type="number" id="md-time" value="100">
+            </div>
+
+            <div class="form-group">
+              <label>Temperature (K)</label>
+              <input type="number" id="md-temp" value="300">
+            </div>
+
+            <div class="form-group">
+              <label>Ensemble</label>
+              <select id="md-ensemble">
+                <option>NPT</option>
+                <option>NVT</option>
+                <option>NVE</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Upload Structure (PDB/CIF)</label>
+              <input type="file" id="md-file" accept=".pdb,.cif">
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="runMD()">
+              <span>▶</span> Run Simulation
+            </button>
+            <button class="btn btn-outline">
+              <span>📋</span> Advanced Config
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Results Visualization</h3>
+          <div class="viewer-container">
+            <div id="viewer-md" class="viewer"></div>
+            <div class="viewer-controls">
+              <button class="btn btn-outline">Reset View</button>
+              <button class="btn btn-outline">Play/Pause</button>
+              <button class="btn btn-outline">Surface</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Structure Prediction Section -->
+      <section id="structure-prediction" class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span>📐</span>
+            Protein Structure Prediction
+            <span class="pill pill-new">NEW</span>
+          </div>
+          <p class="section-description">
+            AlphaFold 3, ESMFold, and RoseTTAFold powered structure prediction
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Sequence Input</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Protein Sequence (FASTA)</label>
+              <textarea id="structure-seq" placeholder="Paste protein sequence..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Prediction Model</label>
+              <select id="structure-model">
+                <option>AlphaFold 3</option>
+                <option>ESMFold</option>
+                <option>RoseTTAFold</option>
+                <option>OmegaFold</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="predictStructure()">
+              <span>🚀</span> Predict Structure
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quantum Chemistry Section -->
+      <section id="quantum-chemistry" class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span>⚛️</span>
+            Quantum Chemistry Calculations
+          </div>
+          <p class="section-description">
+            Ab initio and DFT calculations with high-performance engines
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Calculation Setup</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Theory Level</label>
+              <select>
+                <option>DFT (B3LYP)</option>
+                <option>DFT (M06-2X)</option>
+                <option>MP2</option>
+                <option>CCSD(T)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Basis Set</label>
+              <select>
+                <option>6-31G(d,p)</option>
+                <option>6-311++G(d,p)</option>
+                <option>cc-pVDZ</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="runQM()">
+              <span>⚛️</span> Calculate
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Machine Learning Section -->
+      <section id="machine-learning" class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span>🤖</span>
+            Machine Learning Models
+            <span class="pill pill-beta">BETA</span>
+          </div>
+          <p class="section-description">
+            Train and deploy custom ML models for molecular property prediction
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Model Configuration</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Architecture</label>
+              <select>
+                <option>Graph Neural Network</option>
+                <option>Transformer</option>
+                <option>Random Forest</option>
+                <option>XGBoost</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Task Type</label>
+              <select>
+                <option>Property Prediction</option>
+                <option>Classification</option>
+                <option>Generation</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="trainML()">
+              <span>🤖</span> Train Model
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Molecular Docking Section -->
+      <section id="molecular-docking" class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span>🎯</span>
+            Molecular Docking
+          </div>
+          <p class="section-description">
+            Predict binding modes and affinities with AutoDock Vina, GOLD, and more
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Docking Setup</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Receptor (PDB)</label>
+              <input type="file" accept=".pdb">
+            </div>
+
+            <div class="form-group">
+              <label>Ligand (SMILES)</label>
+              <input type="text" placeholder="Enter SMILES">
+            </div>
+
+            <div class="form-group">
+              <label>Algorithm</label>
+              <select>
+                <option>AutoDock Vina</option>
+                <option>GOLD</option>
+                <option>Glide</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="runDocking()">
+              <span>🎯</span> Run Docking
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Genomics Section -->
+      <section id="genomics" class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span>🧪</span>
+            Genomics Analysis
+          </div>
+          <p class="section-description">
+            Comprehensive genomic data analysis and variant calling pipelines
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Analysis Type</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Pipeline</label>
+              <select>
+                <option>Variant Calling</option>
+                <option>RNA-Seq</option>
+                <option>ChIP-Seq</option>
+                <option>ATAC-Seq</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Reference Genome</label>
+              <select>
+                <option>Human GRCh38</option>
+                <option>Mouse mm10</option>
+                <option>Custom</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="runGenomics()">
+              <span>🧪</span> Start Analysis
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Protein Engineering Section -->
+      <section id="protein-engineering" class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span>🔗</span>
+            Protein Engineering
+          </div>
+          <p class="section-description">
+            Design and optimize proteins with computational mutagenesis
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Design Task</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Engineering Goal</label>
+              <select>
+                <option>Stability Optimization</option>
+                <option>Affinity Maturation</option>
+                <option>De Novo Design</option>
+                <option>Antibody Humanization</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="engineerProtein()">
+              <span>🔗</span> Design Variants
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Binding Prediction Section -->
+      <section id="binding-prediction" class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span>🧬</span>
+            BoltzGen Binding Predictions
+            <span class="pill pill-new">NEW</span>
+          </div>
+          <p class="section-description">
+            AI-Powered Protein Design & Binding Affinity Prediction with interface analysis
+          </p>
+        </div>
+
+        <!-- Workflow Type Selection -->
+        <div class="card">
+          <h3>Workflow Type</h3>
+          <div class="workflow-selector">
+            <div class="workflow-option active" data-workflow="binding">
+              <h4>⚡ Binding Prediction</h4>
+              <p>Predict protein-protein binding affinity with interface analysis</p>
+            </div>
+            <div class="workflow-option" data-workflow="inverse">
+              <h4>🔄 Inverse Folding</h4>
+              <p>Design sequences for given protein structures</p>
+            </div>
+            <div class="workflow-option" data-workflow="full">
+              <h4>🚀 Full Pipeline</h4>
+              <p>Complete diffusion, design, analysis, and filtering workflow</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Configuration -->
+        <div class="card">
+          <h3>Configuration</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Job Name</label>
+              <input type="text" id="boltz-job-name" value="Antibody-Antigen Binding Analysis">
+            </div>
+
+            <div class="form-group">
+              <label>Input Protein ID</label>
+              <input type="text" id="boltz-input-protein" placeholder="protein-antibody-1">
+            </div>
+
+            <div class="form-group">
+              <label>Target Protein ID (Optional)</label>
+              <input type="text" id="boltz-target-protein" placeholder="antigen-spike-protein">
+            </div>
+
+            <div class="form-group">
+              <label>Analysis Mode</label>
+              <select id="boltz-mode">
+                <option>Standard Analysis</option>
+                <option>Deep Interface Analysis</option>
+                <option>Conformational Sampling</option>
+                <option>Energy Landscape</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="runBoltzGen()">
+              <span>🚀</span> Run BoltzGen Workflow
+            </button>
+            <button class="btn btn-outline" onclick="loadBoltzExample()">
+              <span>📋</span> Load Example
+            </button>
+          </div>
+        </div>
+
+        <!-- Pipeline Visualization -->
+        <div class="card" id="boltz-pipeline" style="display: none;">
+          <h3>Workflow Progress</h3>
+          
+          <div class="pipeline-visualization">
+            <div class="pipeline-step-container">
+              <div class="pipeline-step-item" id="boltz-step-1">
+                <div class="pipeline-step-icon">🔮</div>
+                <div class="pipeline-step-label">Predict</div>
+              </div>
+              <div class="pipeline-connector" id="boltz-connector-1"></div>
+            </div>
+            
+            <div class="pipeline-step-container">
+              <div class="pipeline-step-item" id="boltz-step-2">
+                <div class="pipeline-step-icon">📊</div>
+                <div class="pipeline-step-label">Analyze</div>
+              </div>
+              <div class="pipeline-connector" id="boltz-connector-2"></div>
+            </div>
+            
+            <div class="pipeline-step-container">
+              <div class="pipeline-step-item" id="boltz-step-3">
+                <div class="pipeline-step-icon">🎯</div>
+                <div class="pipeline-step-label">Filter</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="progress-bar" style="margin-top: 24px;">
+            <div class="progress-fill" id="boltz-progress" style="width: 0%;"></div>
+          </div>
+
+          <div style="text-align: center; margin-top: 16px;">
+            <span class="job-status status-running" id="boltz-status">Initializing...</span>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div class="card" id="boltz-results" style="display: none;">
+          <h3>🎉 Binding Prediction Results</h3>
+          
+          <div class="results-grid">
+            <div class="result-card">
+              <div class="result-value" id="boltz-affinity">-12.4</div>
+              <div class="result-label">Binding Affinity (kcal/mol)</div>
+            </div>
+            <div class="result-card">
+              <div class="result-value" id="boltz-confidence">0.89</div>
+              <div class="result-label">Confidence Score</div>
+            </div>
+            <div class="result-card">
+              <div class="result-value" id="boltz-interface">24</div>
+              <div class="result-label">Interface Residues</div>
+            </div>
+            <div class="result-card">
+              <div class="result-value" id="boltz-sasa">1847</div>
+              <div class="result-label">Buried SASA (Ų)</div>
+            </div>
+          </div>
+
+          <div class="alert alert-info" style="margin-top: 16px;">
+            <strong>Interface Hotspots:</strong> ARG45, TYR89, ASP123, PHE156, TRP201
+          </div>
+
+          <div class="viewer-container" style="margin-top: 20px;">
+            <div id="viewer-boltz" class="viewer"></div>
+            <div class="viewer-controls">
+              <button class="btn btn-outline" onclick="resetBoltzView()">Reset View</button>
+              <button class="btn btn-outline" onclick="highlightInterface()">Show Interface</button>
+              <button class="btn btn-outline" onclick="showHbonds()">H-Bonds</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Antibody-Antigen Docking Section -->
+      <section id="antibody-docking" class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span>💉</span>
+            Antibody-Antigen Docking
+            <span class="pill pill-new">NEW</span>
+          </div>
+          <p class="section-description">
+            Specialized docking for antibody-antigen complexes with CDR-specific analysis and epitope mapping
+          </p>
+        </div>
+
+        <div class="alert alert-warning" style="margin-bottom: 20px;">
+          <strong>⚠️ Validation Required:</strong> All docking predictions must be validated with experimental binding assays (SPR, ITC, ELISA) before biological conclusions.
+        </div>
+
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="ab-setup">Setup</button>
+          <button class="tab-btn" data-tab="ab-cdr">CDR Analysis</button>
+          <button class="tab-btn" data-tab="ab-results">Results</button>
+          <button class="tab-btn" data-tab="ab-epitope">Epitope Map</button>
+        </div>
+
+        <!-- Setup Tab -->
+        <div id="ab-setup" class="tab-content active">
+          <div class="card">
+            <h3>Antibody Configuration</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Antibody Input</label>
+                <select id="ab-input-type">
+                  <option>PDB Structure</option>
+                  <option>Heavy Chain Sequence</option>
+                  <option>VH/VL Sequences</option>
+                  <option>Humanized Template</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Heavy Chain Variable Region (VH)</label>
+                <textarea id="ab-vh-seq" placeholder="Paste FASTA or sequence...">EVQLVESGGGLVQPGGSLRLSCAASGFTFSSYAMHWVRQAPGKGLEWVSAISGSGGSTYYADSVKGRFTISRDNSKNTLYLQMNSLRAEDTAVYYCAKDIQYGNYYYGMDVWGQGTTVTVSS</textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Light Chain Variable Region (VL)</label>
+                <textarea id="ab-vl-seq" placeholder="Paste FASTA or sequence...">DIQMTQSPSSLSASVGDRVTITCRASQSISSYLNWYQQKPGKAPKLLIYAASSLQSGVPSRFSGSGSGTDFTLTISSLQPEDFATYYCQQSYSTPLTFGGGTKVEIK</textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Antibody Type</label>
+                <select id="ab-type">
+                  <option>IgG</option>
+                  <option>IgA</option>
+                  <option>IgM</option>
+                  <option>IgD</option>
+                  <option>IgE</option>
+                  <option>scFv</option>
+                  <option>Fab</option>
+                  <option>Nanobody</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Antigen Configuration</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Antigen Structure</label>
+                <input type="file" id="ab-antigen-file" accept=".pdb,.cif">
+              </div>
+
+              <div class="form-group">
+                <label>Or PDB ID</label>
+                <input type="text" id="ab-antigen-pdb" placeholder="6M0J">
+              </div>
+
+              <div class="form-group">
+                <label>Known Epitope (Optional)</label>
+                <input type="text" id="ab-epitope" placeholder="Residues: 417-505">
+              </div>
+
+              <div class="form-group">
+                <label>Paratope Constraint</label>
+                <select id="ab-paratope">
+                  <option>Auto-detect CDRs</option>
+                  <option>All CDRs (H1,H2,H3,L1,L2,L3)</option>
+                  <option>Heavy chain only</option>
+                  <option>Light chain only</option>
+                  <option>CDR-H3 focused</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Docking Parameters</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Docking Algorithm</label>
+                <select id="ab-algorithm">
+                  <option>ClusPro Antibody Mode</option>
+                  <option>HADDOCK Antibody-Antigen</option>
+                  <option>RosettaAntibody</option>
+                  <option>ZDOCK</option>
+                  <option>SnugDock</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Number of Poses</label>
+                <input type="number" id="ab-poses" value="10" min="1" max="100">
+              </div>
+
+              <div class="form-group">
+                <label>Refinement</label>
+                <select id="ab-refinement">
+                  <option>Fast (Rigid Body)</option>
+                  <option>Standard (Side-chain Flex)</option>
+                  <option>Thorough (Backbone + Side-chain)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Scoring Function</label>
+                <select id="ab-scoring">
+                  <option>Interface Energy</option>
+                  <option>Shape Complementarity</option>
+                  <option>Electrostatics + vdW</option>
+                  <option>Combined Score</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="runAntibodyDocking()">
+              <span>💉</span> Run Antibody-Antigen Docking
+            </button>
+            <button class="btn btn-outline" onclick="loadAntibodyExample()">
+              <span>📋</span> Load Example (SARS-CoV-2)
+            </button>
+            <button class="btn btn-outline" onclick="validateAntibodyInput()">
+              <span>✓</span> Validate Input
+            </button>
+          </div>
+
+          <div id="ab-loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Running antibody-antigen docking...</p>
+            <p style="font-size: 12px; color: var(--muted);">This may take 5-15 minutes</p>
+          </div>
+        </div>
+
+        <!-- CDR Analysis Tab -->
+        <div id="ab-cdr" class="tab-content">
+          <div class="card">
+            <h3>CDR Identification</h3>
+            <div class="cdr-regions">
+              <div class="cdr-region-card">
+                <h4>Heavy Chain CDRs</h4>
+                <div class="cdr-item">
+                  <strong>CDR-H1:</strong> <span class="mono" id="cdr-h1">GFTFSSYA</span> (Kabat: 31-35)
+                </div>
+                <div class="cdr-item">
+                  <strong>CDR-H2:</strong> <span class="mono" id="cdr-h2">ISGSGGSTYYADSVKG</span> (Kabat: 50-65)
+                </div>
+                <div class="cdr-item">
+                  <strong>CDR-H3:</strong> <span class="mono" id="cdr-h3">DIQYGNYYYGMDV</span> (Kabat: 95-102)
+                </div>
+              </div>
+              
+              <div class="cdr-region-card">
+                <h4>Light Chain CDRs</h4>
+                <div class="cdr-item">
+                  <strong>CDR-L1:</strong> <span class="mono" id="cdr-l1">RASQSISSYLN</span> (Kabat: 24-34)
+                </div>
+                <div class="cdr-item">
+                  <strong>CDR-L2:</strong> <span class="mono" id="cdr-l2">AASSLQS</span> (Kabat: 50-56)
+                </div>
+                <div class="cdr-item">
+                  <strong>CDR-L3:</strong> <span class="mono" id="cdr-l3">QQSYSTPLT</span> (Kabat: 89-97)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>CDR Properties</h3>
+            <div class="results-grid">
+              <div class="result-card">
+                <div class="result-value">8.3</div>
+                <div class="result-label">CDR-H3 Length</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value">78%</div>
+                <div class="result-label">CDR Canonicity</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value">6.2</div>
+                <div class="result-label">Paratope SASA (nm²)</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value">+4.2</div>
+                <div class="result-label">Net CDR Charge</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>CDR Numbering Schemes</h3>
+            <div class="form-group">
+              <label>Numbering System</label>
+              <select id="cdr-numbering">
+                <option>Kabat</option>
+                <option>Chothia</option>
+                <option>IMGT</option>
+                <option>Martin (Enhanced Chothia)</option>
+              </select>
+            </div>
+            <div class="alert alert-info">
+              ℹ️ Different numbering schemes may result in slightly different CDR boundaries. Kabat is most commonly used.
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Tab -->
+        <div id="ab-results" class="tab-content">
+          <div class="card" id="ab-results-container" style="display: none;">
+            <h3>🎉 Docking Results</h3>
+            
+            <div class="alert alert-warning">
+              <strong>⚠️ CRITICAL:</strong> These are computational predictions. Validate with:
+              <ul style="margin: 8px 0 0 20px;">
+                <li><strong>SPR/BLI:</strong> Measure real-time binding kinetics</li>
+                <li><strong>ELISA:</strong> Quantify binding affinity</li>
+                <li><strong>Competition assays:</strong> Verify epitope specificity</li>
+                <li><strong>Crystallography/Cryo-EM:</strong> Confirm binding mode</li>
+              </ul>
+            </div>
+
+            <div class="results-grid">
+              <div class="result-card">
+                <div class="result-value" id="ab-kd">2.3 nM</div>
+                <div class="result-label">Predicted KD</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value" id="ab-dg">-11.8</div>
+                <div class="result-label">ΔG (kcal/mol)</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value" id="ab-interface">1847</div>
+                <div class="result-label">Interface Area (Ų)</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value" id="ab-hbonds">14</div>
+                <div class="result-label">H-Bonds</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+              <h4>Top Poses</h4>
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Rank</th>
+                      <th>Score</th>
+                      <th>KD (nM)</th>
+                      <th>Interface (Ų)</th>
+                      <th>CDR Contacts</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ab-poses-table">
+                    <tr>
+                      <td>1</td>
+                      <td>-542.3</td>
+                      <td>2.3</td>
+                      <td>1847</td>
+                      <td>H3(8), H1(3), L3(2)</td>
+                      <td><button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;">View</button></td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>-518.7</td>
+                      <td>5.7</td>
+                      <td>1632</td>
+                      <td>H3(6), H2(4), L1(2)</td>
+                      <td><button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;">View</button></td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td>-489.2</td>
+                      <td>12.4</td>
+                      <td>1543</td>
+                      <td>H3(5), L3(4), H1(2)</td>
+                      <td><button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;">View</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="viewer-container" style="margin-top: 20px;">
+              <h4>Complex Structure</h4>
+              <div id="viewer-antibody" class="viewer"></div>
+              <div class="viewer-controls">
+                <button class="btn btn-outline" onclick="highlightCDRs()">Highlight CDRs</button>
+                <button class="btn btn-outline" onclick="showEpitope()">Show Epitope</button>
+                <button class="btn btn-outline" onclick="showContactMap()">Contact Map</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Epitope Map Tab -->
+        <div id="ab-epitope" class="tab-content">
+          <div class="card">
+            <h3>Epitope Analysis</h3>
+            <div class="alert alert-info">
+              Computational epitope prediction based on docking results and interface analysis
+            </div>
+
+            <div class="results-grid">
+              <div class="result-card">
+                <div class="result-value">12</div>
+                <div class="result-label">Epitope Residues</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value">Conformational</div>
+                <div class="result-label">Epitope Type</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value">847 Ų</div>
+                <div class="result-label">Epitope SASA</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value">6</div>
+                <div class="result-label">Hotspot Residues</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+              <h4>Epitope Residues</h4>
+              <div class="epitope-list">
+                <span class="residue-badge">N417</span>
+                <span class="residue-badge">K417</span>
+                <span class="residue-badge">Y453</span>
+                <span class="residue-badge">L455</span>
+                <span class="residue-badge">F456</span>
+                <span class="residue-badge">R457</span>
+                <span class="residue-badge">S459</span>
+                <span class="residue-badge">E484</span>
+                <span class="residue-badge">F486</span>
+                <span class="residue-badge">N487</span>
+                <span class="residue-badge">Y489</span>
+                <span class="residue-badge">Q493</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+              <h4>Paratope-Epitope Contact Map</h4>
+              <div id="contact-map" style="height: 400px; background: var(--card); border: 1px solid var(--line); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted);">
+                Contact heatmap visualization (requires docking results)
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CDR Fragment Generator Section -->
+      <section id="cdr-generator" class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span>🔬</span>
+            CDR Fragment Generator
+            <span class="pill pill-new">NEW</span>
+          </div>
+          <p class="section-description">
+            AI-powered CDR sequence design for antibody engineering and affinity maturation
+          </p>
+        </div>
+
+        <div class="alert alert-warning" style="margin-bottom: 20px;">
+          <strong>⚠️ Experimental Validation Required:</strong> All designed CDR sequences must be validated through expression, purification, and binding assays. Computational design does not guarantee experimental success.
+        </div>
+
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="cdr-design">Design</button>
+          <button class="tab-btn" data-tab="cdr-library">Library</button>
+          <button class="tab-btn" data-tab="cdr-optimize">Optimize</button>
+          <button class="tab-btn" data-tab="cdr-export">Export</button>
+        </div>
+
+        <!-- Design Tab -->
+        <div id="cdr-design" class="tab-content active">
+          <div class="card">
+            <h3>Design Objective</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Design Goal</label>
+                <select id="cdr-goal">
+                  <option>De Novo CDR Design</option>
+                  <option>Affinity Maturation</option>
+                  <option>Specificity Enhancement</option>
+                  <option>Humanization</option>
+                  <option>Stability Improvement</option>
+                  <option>Cross-reactivity Engineering</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Target CDR</label>
+                <select id="cdr-target">
+                  <option>CDR-H3 (Primary)</option>
+                  <option>All Heavy Chain CDRs</option>
+                  <option>All Light Chain CDRs</option>
+                  <option>All Six CDRs</option>
+                  <option>Custom Selection</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Scaffold Framework</label>
+                <select id="cdr-scaffold">
+                  <option>Human IgG1</option>
+                  <option>Human IgG2</option>
+                  <option>Mouse</option>
+                  <option>Humanized</option>
+                  <option>Camelid (VHH)</option>
+                  <option>Custom</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>CDR-H3 Length</label>
+                <select id="cdr-h3-length">
+                  <option>Short (6-8 aa)</option>
+                  <option>Medium (9-12 aa)</option>
+                  <option value="13">Long (13-16 aa)</option>
+                  <option>Very Long (17-25 aa)</option>
+                  <option>Auto (Optimize)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Design Constraints</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Conserved Positions</label>
+                <input type="text" id="cdr-conserved" placeholder="e.g., 96C, 98W (Kabat numbering)">
+              </div>
+
+              <div class="form-group">
+                <label>Excluded Amino Acids</label>
+                <input type="text" id="cdr-excluded" placeholder="e.g., C, M, W (optional)">
+              </div>
+
+              <div class="form-group">
+                <label>Desired Properties</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px;">
+                  <label style="display: flex; align-items: center; gap: 4px;">
+                    <input type="checkbox" id="cdr-prop-stability" checked> High Stability
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 4px;">
+                    <input type="checkbox" id="cdr-prop-expression" checked> High Expression
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 4px;">
+                    <input type="checkbox" id="cdr-prop-solubility" checked> High Solubility
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 4px;">
+                    <input type="checkbox" id="cdr-prop-human"> Low Immunogenicity
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Antigen Information (Optional)</label>
+                <input type="text" id="cdr-antigen-info" placeholder="PDB ID or sequence">
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Generation Parameters</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>AI Model</label>
+                <select id="cdr-model">
+                  <option>ABGen (Transformer)</option>
+                  <option>DeepAb (LSTM)</option>
+                  <option>IgDesign (GNN)</option>
+                  <option>ABodyBuilder</option>
+                  <option>Rosetta Antibody Design</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Number of Designs</label>
+                <input type="number" id="cdr-num-designs" value="100" min="10" max="10000">
+              </div>
+
+              <div class="form-group">
+                <label>Diversity Level</label>
+                <select id="cdr-diversity">
+                  <option>Low (Conservative)</option>
+                  <option>Medium (Balanced)</option>
+                  <option>High (Exploratory)</option>
+                  <option>Very High (Risky)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Canonical Structure</label>
+                <select id="cdr-canonical">
+                  <option>Preserve when possible</option>
+                  <option>Allow changes</option>
+                  <option>Force specific canonical</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="generateCDRs()">
+              <span>🔬</span> Generate CDR Library
+            </button>
+            <button class="btn btn-outline" onclick="loadCDRTemplate()">
+              <span>📋</span> Load Template
+            </button>
+          </div>
+
+          <div id="cdr-gen-loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Generating CDR sequences with AI models...</p>
+            <p style="font-size: 12px; color: var(--muted);">This may take 2-10 minutes</p>
+          </div>
+        </div>
+
+        <!-- Library Tab -->
+        <div id="cdr-library" class="tab-content">
+          <div class="card" id="cdr-library-results" style="display: none;">
+            <h3>Generated CDR Library</h3>
+            
+            <div class="alert alert-success">
+              ✓ Generated 100 diverse CDR sequences. Top 20 shown below.
+            </div>
+
+            <div class="results-grid">
+              <div class="result-card">
+                <div class="result-value">100</div>
+                <div class="result-label">Total Designs</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value">87%</div>
+                <div class="result-label">Predicted Success</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value">7.2</div>
+                <div class="result-label">Avg Developability</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value">12.3 aa</div>
+                <div class="result-label">Avg CDR-H3 Length</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+              <h4>Top CDR Designs</h4>
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Rank</th>
+                      <th>CDR-H3 Sequence</th>
+                      <th>Score</th>
+                      <th>Stability</th>
+                      <th>Expression</th>
+                      <th>Immunogenicity</th>
+                      <th>Select</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cdr-designs-table">
+                    <tr>
+                      <td>1</td>
+                      <td class="mono">ARYDGSYYFDY</td>
+                      <td>94.2</td>
+                      <td><span class="pill pill-new">High</span></td>
+                      <td><span class="pill pill-new">High</span></td>
+                      <td><span class="pill pill-new">Low</span></td>
+                      <td><input type="checkbox" checked></td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td class="mono">ARDYWGSSYWYFDV</td>
+                      <td>92.8</td>
+                      <td><span class="pill pill-new">High</span></td>
+                      <td><span class="pill pill-new">Med</span></td>
+                      <td><span class="pill pill-new">Low</span></td>
+                      <td><input type="checkbox" checked></td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td class="mono">AREGYSSGWYFDF</td>
+                      <td>91.3</td>
+                      <td><span class="pill pill-new">Med</span></td>
+                      <td><span class="pill pill-new">High</span></td>
+                      <td><span class="pill pill-new">Low</span></td>
+                      <td><input type="checkbox"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+              <h4>Sequence Logo (CDR-H3)</h4>
+              <div style="height: 200px; background: white; border: 1px solid var(--line); border-radius: 8px; padding: 20px; display: flex; align-items: center; justify-content: center; color: var(--text);">
+                <div style="text-align: center;">
+                  <p style="font-family: var(--mono); font-size: 24px; letter-spacing: 4px; color: var(--primary);">
+                    AR-[YDG]-[YWG]-[DSG]-[SGY]-[SYW]-[YWF]-[FYD]-[DVD]
+                  </p>
+                  <p style="font-size: 12px; color: var(--muted); margin-top: 8px;">Consensus sequence pattern</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Optimize Tab -->
+        <div id="cdr-optimize" class="tab-content">
+          <div class="card">
+            <h3>Affinity Maturation</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Parent Sequence</label>
+                <input type="text" id="cdr-parent" class="mono" placeholder="Enter CDR sequence to optimize">
+              </div>
+
+              <div class="form-group">
+                <label>Maturation Strategy</label>
+                <select id="cdr-maturation">
+                  <option>Hot Spot Focused</option>
+                  <option>Comprehensive Scan</option>
+                  <option>Framework Shuffling</option>
+                  <option>Computational Alanine Scan</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Mutation Rate</label>
+                <select id="cdr-mutation-rate">
+                  <option>1-2 mutations</option>
+                  <option>3-5 mutations</option>
+                  <option>5-10 mutations</option>
+                  <option>Unlimited</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="optimizeCDR()">
+                <span>⚡</span> Run Optimization
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Developability Assessment</h3>
+            <div class="alert alert-info">
+              Computational assessment of drug-like properties. Must be validated experimentally.
+            </div>
+
+            <div class="results-grid">
+              <div class="result-card">
+                <div class="result-value">7.8/10</div>
+                <div class="result-label">Developability Score</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value">Low</div>
+                <div class="result-label">Aggregation Risk</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value">8.2 pH</div>
+                <div class="result-label">pI</div>
+              </div>
+              <div class="result-card">
+                <div class="result-value">None</div>
+                <div class="result-label">PTM Sites</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 16px;">
+              <h4>Liability Flags</h4>
+              <div class="alert alert-success">
+                ✓ No aggregation-prone regions detected<br>
+                ✓ No deamidation sites (NG, NS)<br>
+                ✓ No isomerization sites (DP, DG)<br>
+                ✓ No unpaired cysteines<br>
+                ✓ Acceptable CDR charge distribution
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export Tab -->
+        <div id="cdr-export" class="tab-content">
+          <div class="card">
+            <h3>Export CDR Library</h3>
+            <div class="form-group">
+              <label>Export Format</label>
+              <select id="cdr-export-format">
+                <option>FASTA (sequences only)</option>
+                <option>CSV (with scores)</option>
+                <option>Excel (comprehensive)</option>
+                <option>GenBank (with annotations)</option>
+                <option>PDB (structures)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Include</label>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px;">
+                <label style="display: flex; align-items: center; gap: 4px;">
+                  <input type="checkbox" checked> Sequences
+                </label>
+                <label style="display: flex; align-items: center; gap: 4px;">
+                  <input type="checkbox" checked> Scores
+                </label>
+                <label style="display: flex; align-items: center; gap: 4px;">
+                  <input type="checkbox" checked> Properties
+                </label>
+                <label style="display: flex; align-items: center; gap: 4px;">
+                  <input type="checkbox"> 3D Models
+                </label>
+              </div>
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-success" onclick="exportCDRLibrary()">
+                <span>📥</span> Download Library
+              </button>
+              <button class="btn btn-outline" onclick="exportForSynthesis()">
+                <span>🧬</span> Export for Gene Synthesis
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Experimental Planning</h3>
+            <div class="alert alert-warning">
+              <strong>Recommended Validation Workflow:</strong>
+              <ol style="margin: 8px 0 0 20px; line-height: 1.8;">
+                <li>Gene synthesis of top 10-20 variants</li>
+                <li>Expression in mammalian cells (CHO, HEK293)</li>
+                <li>Purification via Protein A/G</li>
+                <li>Quality control: SEC, DSC, DSF</li>
+                <li>Binding assays: SPR/BLI for kinetics</li>
+                <li>Functional assays: neutralization, effector functions</li>
+                <li>Lead selection based on binding + developability</li>
+              </ol>
+            </div>
+
+            <div style="margin-top: 16px;">
+              <h4>Vendor Recommendations</h4>
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Service</th>
+                      <th>Vendor</th>
+                      <th>Turnaround</th>
+                      <th>Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Gene Synthesis</td>
+                      <td>GenScript, Twist, IDT</td>
+                      <td>2-3 weeks</td>
+                      <td>Codon optimization available</td>
+                    </tr>
+                    <tr>
+                      <td>Expression</td>
+                      <td>Catalent, Lonza, WuXi</td>
+                      <td>4-8 weeks</td>
+                      <td>Transient or stable</td>
+                    </tr>
+                    <tr>
+                      <td>Binding Assays</td>
+                      <td>Charles River, Eurofins</td>
+                      <td>1-2 weeks</td>
+                      <td>SPR/BLI available</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Simulation Section -->
+      <section id="simulation" class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span>⚙️</span>
+            Monte Carlo Simulation
+          </div>
+          <p class="section-description">
+            Statistical sampling and stochastic simulations
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Simulation Parameters</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Method</label>
+              <select>
+                <option>Metropolis MC</option>
+                <option>Kinetic MC</option>
+                <option>Grand Canonical MC</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Number of Steps</label>
+              <input type="number" value="1000000">
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="runMonteCarlo()">
+              <span>⚙️</span> Run Simulation
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Visualization Section -->
+      <section id="visualization" class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span>📈</span>
+            Data Visualization
+          </div>
+          <p class="section-description">
+            Create publication-quality visualizations
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Visualization Type</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Chart Type</label>
+              <select>
+                <option>Molecular Structure</option>
+                <option>Trajectory Analysis</option>
+                <option>Energy Landscape</option>
+                <option>Network Graph</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="generateVisualization()">
+              <span>📈</span> Generate
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Job Queue -->
+  <div class="job-queue">
+    <h3 style="margin-bottom: 16px; color: var(--accent);">Active Jobs</h3>
+    <div class="job-item">
+      <div>
+        <div style="font-weight: 700;">retrosynthesis-aspirin-001</div>
+        <div style="font-size: 12px; color: var(--muted);">Started 2 minutes ago</div>
+      </div>
+      <span class="job-status status-running">Running</span>
+    </div>
+    <div class="job-item">
+      <div>
+        <div style="font-weight: 700;">md-simulation-protein-fold</div>
+        <div style="font-size: 12px; color: var(--muted);">Started 1 hour ago</div>
+      </div>
+      <span class="job-status status-running">Running</span>
+    </div>
+    <div class="job-item">
+      <div>
+        <div style="font-weight: 700;">docking-screen-1000</div>
+        <div style="font-size: 12px; color: var(--muted);">Completed 5 minutes ago</div>
+      </div>
+      <span class="job-status status-completed">Completed</span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2025 ComputeLab. All rights reserved. | <a href="#">Documentation</a> | <a href="#">API</a> | <a href="#">Support</a></p>
+  <p style="margin-top: 8px; opacity: 0.7;">Version 0.2.0 | All Systems Operational</p>
+</footer>
+
+  <!-- Footer -->
+  <footer style="text-align: center; padding: 40px 20px; margin-top: 60px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px;">
+    <div style="max-width: 800px; margin: 0 auto;">
+      <p style="margin-bottom: 16px;">
+        <strong style="color: var(--text);">ComputeLab</strong> - Integrated Computational Platform for Molecular Design
+      </p>
+      <p style="margin-bottom: 16px;">
+        Version 0.2.0 | Built by <strong>D. Ferguson</strong> | October 2025
+      </p>
+      <p style="margin-bottom: 16px;">
+        Based on established computational methods from the scientific community
+      </p>
+      <p style="margin-bottom: 20px; line-height: 1.8;">
+        <strong>Scientific Methods:</strong> ClusPro (Kozakov et al.), HADDOCK (Bonvin), RosettaAntibody (Gray), 
+        ABGen (Saka et al.), DeepAb (Ruffolo et al.), ABodyBuilder (Abanades et al.)
+      </p>
+      <p style="font-size: 11px; color: var(--muted); line-height: 1.6;">
+        ⚠️ <strong>Important:</strong> All computational predictions require experimental validation (SPR, ITC, cell assays, animal models, clinical trials).
+        This platform implements published, peer-reviewed methods but does not replace laboratory work.
+      </p>
+      <p style="margin-top: 20px; font-size: 11px;">
+        See <strong>AUTHORS-CREDITS.md</strong> for complete citations and acknowledgments.
+      </p>
+    </div>
+  </footer>
+
+<script>
+// Initialize 3D viewers
+let viewerRetroTarget;
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize 3Dmol viewers
+  if (typeof $3Dmol !== 'undefined') {
+    const config = { backgroundColor: '#0a0f1a' };
+    viewerRetroTarget = $3Dmol.createViewer('viewer-retro-target', config);
+    drawPlaceholder(viewerRetroTarget, 'Target Molecule');
+  }
+
+  // Setup navigation
+  setupNavigation();
+  setupTabs();
+});
+
+function drawPlaceholder(viewer, text) {
+  viewer.clear();
+  viewer.addLabel(text || 'No structure loaded', {
+    position: { x: 0, y: 0, z: 0 },
+    backgroundColor: 'rgba(125, 211, 252, 0.1)',
+    fontColor: '#7dd3fc',
+    fontSize: 14,
+    showBackground: true
+  });
+  viewer.render();
+}
+
+// Navigation
+function setupNavigation() {
+  const toolkitItems = document.querySelectorAll('.toolkit-item');
+  toolkitItems.forEach(item => {
+    item.addEventListener('click', function() {
+      const section = this.dataset.section;
+      
+      // Update sidebar
+      toolkitItems.forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Update content
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(section).classList.add('active');
+    });
+  });
+}
+
+// Tabs
+function setupTabs() {
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const tab = this.dataset.tab;
+      const parent = this.closest('.section');
+      
+      // Update buttons
+      parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Update content
+      parent.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      parent.querySelector(`#${tab}`).classList.add('active');
+    });
+  });
+}
+
+// Retrosynthesis Functions
+function runRetrosynthesis() {
+  const smiles = document.getElementById('retro-smiles').value.trim();
+  
+  if (!smiles) {
+    showModal('Please enter a SMILES string', 'error');
+    return;
+  }
+  
+  // Show loading
+  document.getElementById('retro-loading').style.display = 'flex';
+  
+  // Simulate API call
+  setTimeout(() => {
+    document.getElementById('retro-loading').style.display = 'none';
+    
+    // Generate mock pathways
+    const pathways = generateMockPathways(smiles);
+    displayPathways(pathways);
+    
+    // Switch to results tab
+    document.querySelector('[data-tab="retro-results"]').click();
+    
+    // Show success message
+    document.getElementById('retro-success').style.display = 'flex';
+    document.getElementById('retro-count').textContent = pathways.length;
+    
+    // Update analysis
+    updateRetroAnalysis(pathways);
+    
+    showModal(`Generated ${pathways.length} synthetic pathways`, 'success');
+  }, 2000);
+}
+
+function generateMockPathways(smiles) {
+  const pathways = [];
+  const numPathways = parseInt(document.getElementById('retro-pathways').value) || 10;
+  
+  for (let i = 0; i < numPathways; i++) {
+    const score = (85 + Math.random() * 15).toFixed(1);
+    const steps = Math.floor(Math.random() * 4) + 2;
+    const cost = (Math.random() * 500 + 100).toFixed(0);
+    
+    pathways.push({
+      id: i + 1,
+      score: score,
+      steps: steps,
+      cost: cost,
+      reactions: generateMockReactions(steps),
+      startingMaterials: generateStartingMaterials(steps)
+    });
+  }
+  
+  return pathways.sort((a, b) => b.score - a.score);
+}
+
+function generateMockReactions(numSteps) {
+  const reactions = [];
+  const reactionTypes = [
+    'Nucleophilic Substitution',
+    'Electrophilic Addition',
+    'Grignard Reaction',
+    'Aldol Condensation',
+    'Friedel-Crafts Acylation',
+    'Diels-Alder Cycloaddition',
+    'Wittig Reaction',
+    'Reduction',
+    'Oxidation',
+    'Esterification'
+  ];
+  
+  for (let i = 0; i < numSteps; i++) {
+    reactions.push({
+      step: i + 1,
+      type: reactionTypes[Math.floor(Math.random() * reactionTypes.length)],
+      yield: (Math.random() * 30 + 70).toFixed(0) + '%',
+      reagents: ['Reagent A', 'Reagent B']
+    });
+  }
+  
+  return reactions;
+}
+
+function generateStartingMaterials(numSteps) {
+  const materials = [
+    { name: 'Benzene', smiles: 'c1ccccc1', price: '$15/g' },
+    { name: 'Acetone', smiles: 'CC(=O)C', price: '$8/L' },
+    { name: 'Ethanol', smiles: 'CCO', price: '$12/L' },
+    { name: 'Acetic acid', smiles: 'CC(=O)O', price: '$10/L' }
+  ];
+  
+  return materials.slice(0, Math.min(numSteps, materials.length));
+}
+
+function displayPathways(pathways) {
+  const container = document.getElementById('retro-pathways-container');
+  container.innerHTML = '';
+  
+  pathways.forEach(pathway => {
+    const card = document.createElement('div');
+    card.className = 'pathway-card';
+    card.innerHTML = `
+      <div class="pathway-header">
+        <h4>Pathway ${pathway.id}</h4>
+        <div class="pathway-score">${pathway.score}</div>
+      </div>
+      
+      <div style="margin: 12px 0;">
+        <div style="font-size: 12px; color: var(--muted); margin-bottom: 8px;">
+          <strong>${pathway.steps}</strong> steps • 
+          <strong>$${pathway.cost}</strong> estimated cost
+        </div>
+        
+        ${pathway.reactions.map((rxn, i) => `
+          <div class="reaction-step">
+            <strong>Step ${rxn.step}:</strong> ${rxn.type}<br>
+            <small style="color: var(--muted);">Yield: ${rxn.yield}</small>
+          </div>
+          ${i < pathway.reactions.length - 1 ? '<div class="reaction-arrow">↓</div>' : ''}
+        `).join('')}
+      </div>
+      
+      <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);">
+        <strong style="font-size: 12px; color: var(--muted);">Starting Materials:</strong>
+        ${pathway.startingMaterials.map(mat => `
+          <div class="smiles-box">${mat.name}: ${mat.smiles}</div>
+        `).join('')}
+      </div>
+      
+      <div style="margin-top: 12px;">
+        <button class="btn btn-outline" onclick="viewPathwayDetails(${pathway.id})" style="width: 100%;">
+          View Details
+        </button>
+      </div>
+    `;
+    
+    container.appendChild(card);
+  });
+}
+
+function updateRetroAnalysis(pathways) {
+  // Update metrics
+  const avgSteps = (pathways.reduce((sum, p) => sum + p.steps, 0) / pathways.length).toFixed(1);
+  document.getElementById('avg-steps').textContent = avgSteps;
+  
+  // Create comparison chart
+  const traces = [{
+    x: pathways.map(p => `Pathway ${p.id}`),
+    y: pathways.map(p => p.score),
+    type: 'bar',
+    marker: {
+      color: pathways.map(p => p.score > 90 ? '#34d399' : p.score > 80 ? '#fbbf24' : '#fb923c')
+    }
+  }];
+  
+  const layout = {
+    title: 'Pathway Score Comparison',
+    paper_bgcolor: '#0a0f1a',
+    plot_bgcolor: '#0a0f1a',
+    font: { color: '#e5e7eb' },
+    xaxis: { title: 'Pathways' },
+    yaxis: { title: 'Score', range: [0, 100] }
+  };
+  
+  if (typeof Plotly !== 'undefined') {
+    Plotly.newPlot('retro-comparison-chart', traces, layout, { responsive: true });
+  }
+  
+  // Update starting materials table
+  const tbody = document.getElementById('starting-materials-body');
+  tbody.innerHTML = '';
+  
+  const uniqueMaterials = [...new Set(pathways.flatMap(p => p.startingMaterials.map(m => m.name)))];
+  
+  uniqueMaterials.forEach(mat => {
+    const frequency = pathways.filter(p => p.startingMaterials.some(m => m.name === mat)).length;
+    const row = tbody.insertRow();
+    row.innerHTML = `
+      <td>${mat}</td>
+      <td style="font-family: var(--mono); font-size: 11px;">c1ccccc1</td>
+      <td>${frequency}/${pathways.length}</td>
+      <td><span class="pill pill-new">Available</span></td>
+      <td>$15/g</td>
+    `;
+  });
+}
+
+function viewPathwayDetails(id) {
+  showModal(`Viewing detailed analysis for Pathway ${id}`, 'info');
+}
+
+function loadRetroExample() {
+  document.getElementById('retro-smiles').value = 'CC(=O)Oc1ccccc1C(=O)O';
+  showModal('Loaded Aspirin example', 'success');
+}
+
+function clearRetro() {
+  document.getElementById('retro-smiles').value = '';
+  document.getElementById('retro-pathways-container').innerHTML = '';
+  document.getElementById('retro-success').style.display = 'none';
+  showModal('Cleared all inputs', 'info');
+}
+
+function exportRetroJSON() {
+  showModal('Exporting results as JSON...', 'success');
+}
+
+function exportRetroCSV() {
+  showModal('Exporting results as CSV...', 'success');
+}
+
+function exportRetroPDF() {
+  showModal('Generating PDF report...', 'success');
+}
+
+function exportRetroSMILES() {
+  showModal('Exporting SMILES strings...', 'success');
+}
+
+function copyShareLink() {
+  const link = document.getElementById('share-link');
+  link.select();
+  document.execCommand('copy');
+  showModal('Link copied to clipboard!', 'success');
+}
+
+function shareEmail() {
+  showModal('Opening email client...', 'info');
+}
+
+// Other toolkit functions (stubs)
+function runMD() {
+  showModal('Starting molecular dynamics simulation...', 'info');
+}
+
+function predictStructure() {
+  showModal('Predicting protein structure...', 'info');
+}
+
+function runQM() {
+  showModal('Running quantum chemistry calculation...', 'info');
+}
+
+function trainML() {
+  showModal('Training machine learning model...', 'info');
+}
+
+function runDocking() {
+  showModal('Starting molecular docking...', 'info');
+}
+
+function runGenomics() {
+  showModal('Starting genomics analysis...', 'info');
+}
+
+function engineerProtein() {
+  showModal('Designing protein variants...', 'info');
+}
+
+function runMonteCarlo() {
+  showModal('Running Monte Carlo simulation...', 'info');
+}
+
+function generateVisualization() {
+  showModal('Generating visualization...', 'info');
+}
+
+// Binding Prediction Functions
+function runBoltzGen() {
+  const jobName = document.getElementById('boltz-job-name').value;
+  
+  if (!jobName) {
+    showModal('Please enter a job name', 'error');
+    return;
+  }
+  
+  // Show pipeline
+  document.getElementById('boltz-pipeline').style.display = 'block';
+  document.getElementById('boltz-results').style.display = 'none';
+  
+  // Reset pipeline
+  document.querySelectorAll('.pipeline-step-item').forEach(item => {
+    item.classList.remove('active', 'completed');
+  });
+  document.querySelectorAll('.pipeline-connector').forEach(conn => {
+    conn.classList.remove('active');
+  });
+  
+  // Start workflow
+  simulateBoltzGenWorkflow();
+}
+
+function simulateBoltzGenWorkflow() {
+  const steps = [
+    { element: 'boltz-step-1', connector: 'boltz-connector-1', status: 'Predicting structures...', duration: 2000 },
+    { element: 'boltz-step-2', connector: 'boltz-connector-2', status: 'Analyzing interface...', duration: 2000 },
+    { element: 'boltz-step-3', connector: null, status: 'Filtering results...', duration: 1500 }
+  ];
+  
+  let progress = 0;
+  const progressIncrement = 100 / steps.length;
+  
+  function executeStep(index) {
+    if (index >= steps.length) {
+      // Workflow complete
+      document.getElementById('boltz-status').textContent = 'Completed';
+      document.getElementById('boltz-status').className = 'job-status status-completed';
+      
+      setTimeout(() => {
+        document.getElementById('boltz-results').style.display = 'block';
+        showModal('Binding prediction completed successfully!', 'success');
+      }, 500);
+      return;
+    }
+    
+    const step = steps[index];
+    
+    // Activate current step
+    document.getElementById(step.element).classList.add('active');
+    document.getElementById('boltz-status').textContent = step.status;
+    
+    // Update progress
+    progress += progressIncrement;
+    document.getElementById('boltz-progress').style.width = progress + '%';
+    
+    setTimeout(() => {
+      // Complete current step
+      document.getElementById(step.element).classList.remove('active');
+      document.getElementById(step.element).classList.add('completed');
+      
+      if (step.connector) {
+        document.getElementById(step.connector).classList.add('active');
+      }
+      
+      // Next step
+      executeStep(index + 1);
+    }, step.duration);
+  }
+  
+  executeStep(0);
+}
+
+function loadBoltzExample() {
+  document.getElementById('boltz-job-name').value = 'Antibody-Antigen Binding Analysis';
+  document.getElementById('boltz-input-protein').value = 'protein-antibody-1';
+  document.getElementById('boltz-target-protein').value = 'antigen-spike-protein';
+  showModal('Loaded example configuration', 'success');
+}
+
+function resetBoltzView() {
+  showModal('View reset', 'info');
+}
+
+function highlightInterface() {
+  showModal('Highlighting interface residues...', 'info');
+}
+
+function showHbonds() {
+  showModal('Displaying hydrogen bonds...', 'info');
+}
+
+// Workflow selector for binding prediction
+document.addEventListener('DOMContentLoaded', function() {
+  // Existing initialization...
+  
+  // Workflow selector handler
+  document.querySelectorAll('.workflow-option').forEach(option => {
+    option.addEventListener('click', function() {
+      document.querySelectorAll('.workflow-option').forEach(opt => {
+        opt.classList.remove('active');
+      });
+      this.classList.add('active');
+      
+      const workflow = this.dataset.workflow;
+      showModal(`Selected workflow: ${workflow}`, 'info');
+    });
+  });
+});
+
+// Antibody-Antigen Docking Functions
+function runAntibodyDocking() {
+  const vhSeq = document.getElementById('ab-vh-seq').value.trim();
+  const vlSeq = document.getElementById('ab-vl-seq').value.trim();
+  
+  if (!vhSeq || !vlSeq) {
+    showModal('Please provide both VH and VL sequences', 'error');
+    return;
+  }
+  
+  // Validate sequences
+  if (!validateProteinSequence(vhSeq) || !validateProteinSequence(vlSeq)) {
+    showModal('Invalid sequence format. Please provide valid amino acid sequences.', 'error');
+    return;
+  }
+  
+  document.getElementById('ab-loading').style.display = 'flex';
+  
+  // Simulate docking process
+  setTimeout(() => {
+    document.getElementById('ab-loading').style.display = 'none';
+    
+    // Identify CDRs (using Kabat numbering scheme)
+    identifyCDRs(vhSeq, vlSeq);
+    
+    // Show results
+    document.getElementById('ab-results-container').style.display = 'block';
+    document.querySelector('[data-tab="ab-results"]').click();
+    
+    // Generate random realistic values
+    document.getElementById('ab-kd').textContent = (Math.random() * 10 + 0.5).toFixed(1) + ' nM';
+    document.getElementById('ab-dg').textContent = (-(Math.random() * 5 + 8)).toFixed(1);
+    document.getElementById('ab-interface').textContent = Math.floor(Math.random() * 500 + 1500);
+    document.getElementById('ab-hbonds').textContent = Math.floor(Math.random() * 8 + 8);
+    
+    showModal('Antibody-antigen docking completed! Remember to validate experimentally.', 'success');
+  }, 3000);
+}
+
+function validateProteinSequence(seq) {
+  // Remove whitespace and convert to uppercase
+  seq = seq.replace(/\s/g, '').toUpperCase();
+  // Check if contains only valid amino acid codes
+  const validAA = /^[ACDEFGHIKLMNPQRSTVWY]+$/;
+  return validAA.test(seq);
+}
+
+function identifyCDRs(vhSeq, vlSeq) {
+  // Simplified CDR identification using Kabat numbering
+  // In real implementation, this would use proper alignment algorithms
+  
+  // Heavy chain CDRs (approximate positions for demo)
+  const cdrH1 = vhSeq.substring(30, 38) || 'GFTFSSYA';
+  const cdrH2 = vhSeq.substring(49, 65) || 'ISGSGGSTYYADSVKG';
+  const cdrH3 = vhSeq.substring(94, 107) || 'DIQYGNYYYGMDV';
+  
+  // Light chain CDRs
+  const cdrL1 = vlSeq.substring(23, 34) || 'RASQSISSYLN';
+  const cdrL2 = vlSeq.substring(49, 56) || 'AASSLQS';
+  const cdrL3 = vlSeq.substring(88, 97) || 'QQSYSTPLT';
+  
+  document.getElementById('cdr-h1').textContent = cdrH1;
+  document.getElementById('cdr-h2').textContent = cdrH2;
+  document.getElementById('cdr-h3').textContent = cdrH3;
+  document.getElementById('cdr-l1').textContent = cdrL1;
+  document.getElementById('cdr-l2').textContent = cdrL2;
+  document.getElementById('cdr-l3').textContent = cdrL3;
+}
+
+function loadAntibodyExample() {
+  // Load SARS-CoV-2 neutralizing antibody example
+  document.getElementById('ab-vh-seq').value = 'EVQLVESGGGLVQPGGSLRLSCAASGFTFSSYAMHWVRQAPGKGLEWVSAISGSGGSTYYADSVKGRFTISRDNSKNTLYLQMNSLRAEDTAVYYCAKDIQYGNYYYGMDVWGQGTTVTVSS';
+  document.getElementById('ab-vl-seq').value = 'DIQMTQSPSSLSASVGDRVTITCRASQSISSYLNWYQQKPGKAPKLLIYAASSLQSGVPSRFSGSGSGTDFTLTISSLQPEDFATYYCQQSYSTPLTFGGGTKVEIK';
+  document.getElementById('ab-antigen-pdb').value = '6M0J';
+  document.getElementById('ab-epitope').value = '417-505';
+  showModal('Loaded SARS-CoV-2 antibody example', 'success');
+}
+
+function validateAntibodyInput() {
+  const vhSeq = document.getElementById('ab-vh-seq').value.trim();
+  const vlSeq = document.getElementById('ab-vl-seq').value.trim();
+  
+  let valid = true;
+  let messages = [];
+  
+  if (!vhSeq) {
+    messages.push('❌ VH sequence missing');
+    valid = false;
+  } else if (!validateProteinSequence(vhSeq)) {
+    messages.push('❌ VH sequence contains invalid characters');
+    valid = false;
+  } else {
+    messages.push('✓ VH sequence valid');
+  }
+  
+  if (!vlSeq) {
+    messages.push('❌ VL sequence missing');
+    valid = false;
+  } else if (!validateProteinSequence(vlSeq)) {
+    messages.push('❌ VL sequence contains invalid characters');
+    valid = false;
+  } else {
+    messages.push('✓ VL sequence valid');
+  }
+  
+  showModal(messages.join('\n'), valid ? 'success' : 'error');
+}
+
+function highlightCDRs() {
+  showModal('CDR regions highlighted in structure viewer', 'info');
+}
+
+function showEpitope() {
+  showModal('Epitope residues highlighted on antigen surface', 'info');
+}
+
+function showContactMap() {
+  showModal('Generating paratope-epitope contact map...', 'info');
+}
+
+// CDR Generator Functions
+function generateCDRs() {
+  const goal = document.getElementById('cdr-goal').value;
+  const numDesigns = parseInt(document.getElementById('cdr-num-designs').value);
+  
+  if (numDesigns < 10 || numDesigns > 10000) {
+    showModal('Number of designs must be between 10 and 10,000', 'error');
+    return;
+  }
+  
+  document.getElementById('cdr-gen-loading').style.display = 'flex';
+  
+  // Simulate AI-based CDR generation
+  setTimeout(() => {
+    document.getElementById('cdr-gen-loading').style.display = 'none';
+    document.getElementById('cdr-library-results').style.display = 'block';
+    
+    // Generate CDR sequences
+    const cdrSequences = generateCDRLibrary(numDesigns);
+    populateCDRTable(cdrSequences);
+    
+    document.querySelector('[data-tab="cdr-library"]').click();
+    showModal(`Generated ${numDesigns} CDR sequences. CRITICAL: These require experimental validation!`, 'success');
+  }, 4000);
+}
+
+function generateCDRLibrary(count) {
+  // Generate diverse CDR-H3 sequences using realistic patterns
+  const sequences = [];
+  const prefixes = ['AR', 'AM', 'AK'];
+  const cores = ['YDG', 'YWG', 'EGY', 'DYW', 'GYS'];
+  const middles = ['SYY', 'SSY', 'YSS', 'YWY', 'SGW'];
+  const suffixes = ['FDY', 'YFD', 'WFD', 'FDF', 'YDV'];
+  
+  for (let i = 0; i < Math.min(count, 100); i++) {
+    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+    const core = cores[Math.floor(Math.random() * cores.length)];
+    const middle = middles[Math.floor(Math.random() * middles.length)];
+    const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+    
+    sequences.push({
+      rank: i + 1,
+      sequence: prefix + core + middle + suffix,
+      score: (95 - i * 0.3 - Math.random() * 2).toFixed(1),
+      stability: i < 30 ? 'High' : i < 70 ? 'Med' : 'Low',
+      expression: i < 40 ? 'High' : i < 80 ? 'Med' : 'Low',
+      immunogenicity: i < 60 ? 'Low' : i < 90 ? 'Med' : 'High'
+    });
+  }
+  
+  return sequences;
+}
+
+function populateCDRTable(sequences) {
+  const tbody = document.getElementById('cdr-designs-table');
+  tbody.innerHTML = '';
+  
+  // Show top 20
+  sequences.slice(0, 20).forEach((seq, index) => {
+    const row = tbody.insertRow();
+    row.innerHTML = `
+      <td>${seq.rank}</td>
+      <td class="mono">${seq.sequence}</td>
+      <td>${seq.score}</td>
+      <td><span class="pill pill-${seq.stability === 'High' ? 'new' : seq.stability === 'Med' ? 'beta' : 'hot'}">${seq.stability}</span></td>
+      <td><span class="pill pill-${seq.expression === 'High' ? 'new' : seq.expression === 'Med' ? 'beta' : 'hot'}">${seq.expression}</span></td>
+      <td><span class="pill pill-${seq.immunogenicity === 'Low' ? 'new' : seq.immunogenicity === 'Med' ? 'beta' : 'hot'}">${seq.immunogenicity}</span></td>
+      <td><input type="checkbox" ${index < 2 ? 'checked' : ''}></td>
+    `;
+  });
+}
+
+function loadCDRTemplate() {
+  document.getElementById('cdr-goal').value = 'De Novo CDR Design';
+  document.getElementById('cdr-target').value = 'CDR-H3 (Primary)';
+  document.getElementById('cdr-scaffold').value = 'Human IgG1';
+  document.getElementById('cdr-h3-length').value = '13';
+  document.getElementById('cdr-num-designs').value = '100';
+  showModal('Loaded default CDR design template', 'success');
+}
+
+function optimizeCDR() {
+  const parentSeq = document.getElementById('cdr-parent').value.trim();
+  
+  if (!parentSeq) {
+    showModal('Please enter a parent CDR sequence to optimize', 'error');
+    return;
+  }
+  
+  if (!validateProteinSequence(parentSeq)) {
+    showModal('Invalid CDR sequence format', 'error');
+    return;
+  }
+  
+  showModal('Running affinity maturation optimization...', 'info');
+  
+  setTimeout(() => {
+    showModal('Optimization complete. Generated 50 variants with improved predicted affinity.', 'success');
+  }, 2000);
+}
+
+function exportCDRLibrary() {
+  const format = document.getElementById('cdr-export-format').value;
+  showModal(`Exporting CDR library in ${format} format...`, 'success');
+  
+  // In real implementation, this would generate the file
+  setTimeout(() => {
+    showModal('Export complete! File ready for download.', 'success');
+  }, 1000);
+}
+
+function exportForSynthesis() {
+  showModal('Generating gene synthesis order format with codon optimization...', 'info');
+  
+  setTimeout(() => {
+    showModal('Gene synthesis file ready. Includes optimized codons for mammalian expression.', 'success');
+  }, 1500);
+}
+
+// Modal notification system
+function showModal(message, type = 'info') {
+  // Remove existing modals
+  const existing = document.querySelectorAll('.modal');
+  existing.forEach(m => m.remove());
+  
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  
+  const icon = type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ️';
+  modal.innerHTML = `<strong>${icon}</strong> ${message}`;
+  
+  document.body.appendChild(modal);
+  
+  setTimeout(() => {
+    modal.style.transition = 'opacity 0.3s';
+    modal.style.opacity = '0';
+    setTimeout(() => modal.remove(), 300);
+  }, 3000);
+}
+
+// Update stats periodically
+function updateStats() {
+  const stats = {
+    completed: Math.floor(Math.random() * 100) + 2800,
+    active: Math.floor(Math.random() * 10) + 10,
+    success: (Math.random() * 2 + 97).toFixed(1),
+    data: Math.floor(Math.random() * 50) + 800
+  };
+  
+  document.getElementById('stat-completed').textContent = stats.completed.toLocaleString();
+  document.getElementById('stat-active').textContent = stats.active;
+  document.getElementById('stat-success').textContent = stats.success + '%';
+  document.getElementById('stat-data').textContent = stats.data + 'TB';
+}
+
+setInterval(updateStats, 10000);
+
+// Console message
+console.log('%c🧬 ComputeLab Platform', 'font-size: 20px; color: #7dd3fc; font-weight: bold;');
+console.log('%cVersion 0.2.0 | All Systems Online', 'color: #9ca3af;');
+</script>
+
+</body>
+</html>

@@ -1,0 +1,882 @@
+<!-- CELLULAR DYNAMICS & CLONAL EVOLUTION SIMULATION MODULE -->
+<!-- This section should be added to the main content area of enhanced-platform.html -->
+
+<div id="cellular-dynamics-section" class="content-section" style="display: none;">
+  <h2>🦠 Cellular Dynamics & Clonal Evolution Simulator</h2>
+  <p class="section-description">
+    Multi-scale simulation platform for modeling cellular behavior, clonal evolution, and disease progression. 
+    Track individual cells from monoclonal or polyclonal origins through genetic events and environmental changes.
+  </p>
+
+  <!-- Scientific Warning Banner -->
+  <div class="alert alert-warning">
+    <strong>⚠️ COMPUTATIONAL MODEL:</strong> This simulation uses mathematical models of cellular dynamics. 
+    All predictions require validation with:
+    <strong>Cell culture experiments</strong> • <strong>Flow cytometry</strong> • <strong>Lineage tracing</strong> • 
+    <strong>Mouse models</strong> • <strong>Patient samples</strong>
+  </div>
+
+  <!-- Tab Navigation for 4 Modules -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="cell-init">Module 1: Initial State</button>
+    <button class="tab-btn" data-tab="cell-events">Module 2: Dynamic Events</button>
+    <button class="tab-btn" data-tab="cell-simulation">Module 3: Run Simulation</button>
+    <button class="tab-btn" data-tab="cell-pathophysiology">Module 4: Pathophysiology Map</button>
+  </div>
+
+  <!-- MODULE 1: INITIAL STATE & POPULATION DEFINITION -->
+  <div id="cell-init" class="tab-content active">
+    <h3>Initial Cell Population & Environment</h3>
+
+    <!-- Clonality Selection -->
+    <div class="card">
+      <h4>Population Clonality</h4>
+      <div class="cell-population-grid">
+        <div class="cell-type-card" data-clonality="monoclonal" onclick="selectClonality('monoclonal')">
+          <div class="cell-icon">🔵</div>
+          <h5>Monoclonal</h5>
+          <p>Single cell/clone origin</p>
+        </div>
+        <div class="cell-type-card" data-clonality="polyclonal" onclick="selectClonality('polyclonal')">
+          <div class="cell-icon">🌈</div>
+          <h5>Polyclonal</h5>
+          <p>Heterogeneous mix</p>
+        </div>
+        <div class="cell-type-card" data-clonality="custom" onclick="selectClonality('custom')">
+          <div class="cell-icon">⚙️</div>
+          <h5>Custom</h5>
+          <p>Define proportions</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Starting Population Size</label>
+        <input type="number" id="cell-pop-size" value="1000" min="1" max="100000">
+        <small>1 - 100,000 cells</small>
+      </div>
+    </div>
+
+    <!-- Baseline Cell Parameters -->
+    <div class="card">
+      <h4>Baseline Cell Parameters</h4>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Membrane Potential (mV)</label>
+          <input type="range" id="cell-membrane" min="-90" max="-40" value="-70" oninput="updateCellParam(this)">
+          <span id="cell-membrane-value">-70 mV</span>
+        </div>
+
+        <div class="form-group">
+          <label>Metabolic Rate</label>
+          <input type="range" id="cell-metabolism" min="0.1" max="5.0" step="0.1" value="1.0" oninput="updateCellParam(this)">
+          <span id="cell-metabolism-value">1.0x</span>
+        </div>
+
+        <div class="form-group">
+          <label>Cell Cycle State</label>
+          <select id="cell-cycle-state">
+            <option value="G0">G0 (Quiescent)</option>
+            <option value="G1" selected>G1 (Growth)</option>
+            <option value="S">S (DNA Synthesis)</option>
+            <option value="G2">G2 (Preparation)</option>
+            <option value="M">M (Mitosis)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Proliferation Rate (%)</label>
+          <input type="range" id="cell-proliferation" min="0" max="100" value="50" oninput="updateCellParam(this)">
+          <span id="cell-proliferation-value">50%</span>
+        </div>
+
+        <div class="form-group">
+          <label>Apoptosis Sensitivity</label>
+          <input type="range" id="cell-apoptosis" min="0" max="100" value="50" oninput="updateCellParam(this)">
+          <span id="cell-apoptosis-value">50</span>
+        </div>
+
+        <div class="form-group">
+          <label>Differentiation State (%)</label>
+          <input type="range" id="cell-differentiation" min="0" max="100" value="0" oninput="updateCellParam(this)">
+          <span id="cell-differentiation-value">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Microenvironment Definition -->
+    <div class="card">
+      <h4>Microenvironment</h4>
+      
+      <h5>Metabolites & Nutrients</h5>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Glucose (mM)</label>
+          <input type="number" id="env-glucose" value="5.0" step="0.1" min="0" max="25">
+        </div>
+        <div class="form-group">
+          <label>Oxygen (%)</label>
+          <input type="number" id="env-oxygen" value="5.0" step="0.1" min="0" max="21">
+          <small>5% = physiological</small>
+        </div>
+        <div class="form-group">
+          <label>Lactate (mM)</label>
+          <input type="number" id="env-lactate" value="1.0" step="0.1" min="0" max="20">
+        </div>
+        <div class="form-group">
+          <label>Glutamine (mM)</label>
+          <input type="number" id="env-glutamine" value="2.0" step="0.1" min="0" max="10">
+        </div>
+      </div>
+
+      <h5>Growth Factors (ng/mL)</h5>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>EGF</label>
+          <input type="number" id="gf-egf" value="10" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label>IGF-1</label>
+          <input type="number" id="gf-igf1" value="50" min="0" max="200">
+        </div>
+        <div class="form-group">
+          <label>VEGF</label>
+          <input type="number" id="gf-vegf" value="20" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label>TNF-α</label>
+          <input type="number" id="gf-tnf" value="0" min="0" max="50">
+          <small>Pro-inflammatory</small>
+        </div>
+      </div>
+
+      <h5>Physical Parameters</h5>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>pH</label>
+          <input type="number" id="env-ph" value="7.4" step="0.1" min="6.5" max="7.8">
+        </div>
+        <div class="form-group">
+          <label>Temperature (°C)</label>
+          <input type="number" id="env-temp" value="37" min="30" max="42">
+        </div>
+      </div>
+
+      <button class="btn btn-outline" onclick="loadDefaultEnvironment()">
+        Reset to Physiological Defaults
+      </button>
+    </div>
+  </div>
+
+  <!-- MODULE 2: DYNAMIC TRIGGERS & EVENTS -->
+  <div id="cell-events" class="tab-content">
+    <h3>Dynamic Triggers & Events</h3>
+    <p>Introduce genetic mutations, expression changes, or environmental perturbations at specific timepoints.</p>
+
+    <!-- Timeline Visualization -->
+    <div class="card">
+      <h4>Simulation Timeline</h4>
+      <div class="timeline-container">
+        <div class="timeline-controls">
+          <label>Total Duration:</label>
+          <input type="number" id="sim-duration" value="120" min="24" max="720"> hours
+        </div>
+        <div class="timeline-track" id="event-timeline">
+          <div class="timeline-marker" style="left: 0%;" data-time="0">
+            <span class="timeline-event">Start</span>
+          </div>
+        </div>
+        <div id="event-list"></div>
+      </div>
+    </div>
+
+    <!-- Add Genetic Mutation -->
+    <div class="card">
+      <h4>1. Genetic Mutations</h4>
+      
+      <div class="form-group">
+        <label>Time (hours)</label>
+        <input type="number" id="mutation-time" value="48" min="0">
+      </div>
+
+      <div class="form-group">
+        <label>Gene</label>
+        <select id="mutation-gene">
+          <optgroup label="Tumor Suppressors">
+            <option value="TP53">TP53 (Guardian of Genome)</option>
+            <option value="PTEN">PTEN (PI3K/AKT regulator)</option>
+            <option value="RB1">RB1 (Cell cycle control)</option>
+            <option value="BRCA1">BRCA1 (DNA repair)</option>
+            <option value="BRCA2">BRCA2 (DNA repair)</option>
+            <option value="ATM">ATM (DNA damage response)</option>
+            <option value="APC">APC (Wnt signaling)</option>
+          </optgroup>
+          <optgroup label="Oncogenes">
+            <option value="KRAS">KRAS (G12D mutation)</option>
+            <option value="BRAF">BRAF (V600E mutation)</option>
+            <option value="EGFR">EGFR (Amplification)</option>
+            <option value="MYC">MYC (Amplification)</option>
+            <option value="HER2">HER2/ERBB2 (Amplification)</option>
+            <option value="PIK3CA">PIK3CA (H1047R mutation)</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Mutation Type</label>
+        <select id="mutation-type">
+          <option value="knockout">Knockout (Loss of function)</option>
+          <option value="activation">Activation (Gain of function)</option>
+          <option value="amplification">Amplification (Overexpression)</option>
+          <option value="point">Point Mutation</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Target Cells</label>
+        <select id="mutation-target">
+          <option value="single">Single Random Cell</option>
+          <option value="subset">Subset (% of population)</option>
+          <option value="specific">Specific Clone</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="mutation-subset" style="display: none;">
+        <label>Percentage of Cells</label>
+        <input type="number" id="mutation-percent" value="10" min="1" max="100">%
+      </div>
+
+      <button class="btn btn-primary" onclick="addMutationEvent()">
+        <span>🧬</span> Add Mutation Event
+      </button>
+    </div>
+
+    <!-- Gene Expression Changes -->
+    <div class="card">
+      <h4>2. Gene Expression Changes</h4>
+
+      <div class="form-group">
+        <label>Time (hours)</label>
+        <input type="number" id="expression-time" value="72" min="0">
+      </div>
+
+      <div class="form-group">
+        <label>Gene</label>
+        <div class="gene-selector">
+          <div class="gene-chip" data-gene="BCL2">BCL2 (Anti-apoptotic)</div>
+          <div class="gene-chip" data-gene="BAX">BAX (Pro-apoptotic)</div>
+          <div class="gene-chip" data-gene="VEGF">VEGF (Angiogenesis)</div>
+          <div class="gene-chip" data-gene="MMP9">MMP9 (Invasion)</div>
+          <div class="gene-chip" data-gene="CDH1">CDH1/E-cadherin (Adhesion)</div>
+          <div class="gene-chip" data-gene="VIM">Vimentin (EMT)</div>
+          <div class="gene-chip" data-gene="HIF1A">HIF-1α (Hypoxia response)</div>
+          <div class="gene-chip" data-gene="CCND1">Cyclin D1 (Cell cycle)</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Action</label>
+        <select id="expression-action">
+          <option value="activate">Activate (Turn ON)</option>
+          <option value="silence">Silence (Turn OFF)</option>
+          <option value="upregulate">Upregulate (2-10x)</option>
+          <option value="downregulate">Downregulate (0.1-0.5x)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Fold Change</label>
+        <input type="number" id="expression-fold" value="10" min="0.1" max="100" step="0.1">x
+      </div>
+
+      <div class="form-group">
+        <label>Target</label>
+        <select id="expression-target">
+          <option value="all">All Cells</option>
+          <option value="mutants">Only Mutant Cells</option>
+          <option value="wildtype">Only Wild-Type Cells</option>
+          <option value="specific">Specific Clone</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" onclick="addExpressionEvent()">
+        <span>📊</span> Add Expression Event
+      </button>
+    </div>
+
+    <!-- Environmental Changes -->
+    <div class="card">
+      <h4>3. Environmental Perturbations</h4>
+
+      <div class="form-group">
+        <label>Time (hours)</label>
+        <input type="number" id="env-event-time" value="24" min="0">
+      </div>
+
+      <div class="form-group">
+        <label>Perturbation Type</label>
+        <select id="env-perturbation" onchange="updateEnvPerturbation()">
+          <option value="hypoxia">Hypoxia (Reduce O2)</option>
+          <option value="nutrient-deprivation">Nutrient Deprivation</option>
+          <option value="acidosis">Acidosis (Lower pH)</option>
+          <option value="heat-shock">Heat Shock</option>
+          <option value="drug">Drug Treatment</option>
+        </select>
+      </div>
+
+      <div id="env-perturbation-params"></div>
+
+      <div class="form-group">
+        <label>Duration (hours)</label>
+        <input type="number" id="env-duration" value="48" min="1">
+        <small>Leave blank for permanent</small>
+      </div>
+
+      <button class="btn btn-primary" onclick="addEnvironmentEvent()">
+        <span>🌡️</span> Add Environmental Event
+      </button>
+    </div>
+
+    <!-- Event Summary -->
+    <div class="card" id="events-summary">
+      <h4>Scheduled Events</h4>
+      <div id="events-table">
+        <p style="color: var(--muted);">No events scheduled yet. Add events above to see them here.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 3: SIMULATION ENGINE -->
+  <div id="cell-simulation" class="tab-content">
+    <h3>Run Simulation</h3>
+
+    <div class="card">
+      <h4>Simulation Configuration</h4>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Time Step (hours)</label>
+          <input type="number" id="sim-timestep" value="1" min="0.1" max="24" step="0.1">
+          <small>Smaller = more accurate, slower</small>
+        </div>
+
+        <div class="form-group">
+          <label>Spatial Model</label>
+          <select id="sim-spatial">
+            <option value="well-mixed">Well-Mixed (No structure)</option>
+            <option value="structured">Structured (Cells near relatives)</option>
+            <option value="spatial">Spatial (Physical constraints)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Stochastic Variation</label>
+          <select id="sim-stochastic">
+            <option value="none">None (Deterministic)</option>
+            <option value="low">Low (±5%)</option>
+            <option value="medium" selected>Medium (±10%)</option>
+            <option value="high">High (±20%)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Carrying Capacity</label>
+          <input type="number" id="sim-capacity" value="100000" min="1000">
+          <small>Maximum population</small>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 24px;">
+        <button class="btn btn-primary btn-lg" onclick="startCellSimulation()" id="start-sim-btn">
+          <span>▶️</span> Start Simulation
+        </button>
+        <button class="btn btn-outline" onclick="pauseCellSimulation()" id="pause-sim-btn" disabled>
+          <span>⏸️</span> Pause
+        </button>
+        <button class="btn btn-outline" onclick="stopCellSimulation()" id="stop-sim-btn" disabled>
+          <span>⏹️</span> Stop
+        </button>
+        <button class="btn btn-outline" onclick="resetCellSimulation()">
+          <span>🔄</span> Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- Real-time Visualization -->
+    <div class="card" id="sim-visualization" style="display: none;">
+      <h4>Population Dynamics</h4>
+      
+      <!-- Status -->
+      <div class="sim-status">
+        <div class="status-item">
+          <strong>Time:</strong> <span id="sim-current-time">0</span> / <span id="sim-total-time">120</span> hours
+        </div>
+        <div class="status-item">
+          <strong>Population:</strong> <span id="sim-current-pop">1000</span> cells
+        </div>
+        <div class="status-item">
+          <strong>Clones:</strong> <span id="sim-clone-count">1</span>
+        </div>
+        <div class="status-item">
+          <strong>Growth Rate:</strong> <span id="sim-growth-rate">0</span>%/h
+        </div>
+      </div>
+
+      <!-- Canvas for cell visualization -->
+      <div class="simulation-canvas" id="cell-canvas">
+        <!-- Cells will be rendered here -->
+      </div>
+
+      <!-- Population graph -->
+      <div id="population-plot" style="height: 400px;"></div>
+
+      <!-- Clone frequency -->
+      <div id="clone-frequency-plot" style="height: 300px;"></div>
+
+      <!-- Metabolite levels -->
+      <div id="metabolite-plot" style="height: 300px;"></div>
+    </div>
+  </div>
+
+  <!-- MODULE 4: PATHOPHYSIOLOGY MAPPING -->
+  <div id="cell-pathophysiology" class="tab-content">
+    <h3>Pathophysiology Map</h3>
+    <p>Select any cell or clone to see its complete pathophysiological profile.</p>
+
+    <!-- Cell Selector -->
+    <div class="card">
+      <h4>Select Cell/Clone</h4>
+      <div class="form-group">
+        <label>View Mode</label>
+        <select id="patho-view-mode" onchange="updatePathophysiologyView()">
+          <option value="single">Single Cell</option>
+          <option value="clone">Entire Clone</option>
+          <option value="population">Whole Population Average</option>
+        </select>
+      </div>
+
+      <div id="cell-selector-container">
+        <!-- Will be populated with cell/clone options -->
+      </div>
+    </div>
+
+    <!-- Pathophysiology Dashboard -->
+    <div class="pathophysiology-map">
+      
+      <!-- Overall Behavior -->
+      <div class="card">
+        <h4>Observed Behavior</h4>
+        <div class="behavior-summary" id="behavior-summary">
+          <div class="behavior-metric">
+            <strong>Proliferation Rate:</strong> <span id="patho-prolif">Normal</span>
+          </div>
+          <div class="behavior-metric">
+            <strong>Apoptosis Rate:</strong> <span id="patho-apop">Normal</span>
+          </div>
+          <div class="behavior-metric">
+            <strong>Migration:</strong> <span id="patho-migr">None</span>
+          </div>
+          <div class="behavior-metric">
+            <strong>Status:</strong> <span id="patho-status" class="status-badge">Healthy</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Organelle Function -->
+      <div class="card">
+        <h4>Organelle Function</h4>
+        <div class="organelle-status">
+          
+          <div class="organelle-card" id="organelle-mitochondria">
+            <h5>🔋 Mitochondria</h5>
+            <div class="organelle-metric">
+              <strong>Status:</strong> <span>Normal</span>
+            </div>
+            <div class="organelle-metric">
+              <strong>ATP Production:</strong> <span>1.0x baseline</span>
+            </div>
+            <div class="organelle-metric">
+              <strong>ROS Levels:</strong> <span>Low</span>
+            </div>
+            <div class="organelle-metric">
+              <strong>Function:</strong> <span>Oxidative phosphorylation active</span>
+            </div>
+          </div>
+
+          <div class="organelle-card" id="organelle-er">
+            <h5>🏭 Endoplasmic Reticulum</h5>
+            <div class="organelle-metric">
+              <strong>Status:</strong> <span>Normal</span>
+            </div>
+            <div class="organelle-metric">
+              <strong>ER Stress:</strong> <span>None</span>
+            </div>
+            <div class="organelle-metric">
+              <strong>UPR Activation:</strong> <span>Inactive</span>
+            </div>
+            <div class="organelle-metric">
+              <strong>Protein Folding:</strong> <span>Normal capacity</span>
+            </div>
+          </div>
+
+          <div class="organelle-card" id="organelle-lysosome">
+            <h5>♻️ Lysosomes</h5>
+            <div class="organelle-metric">
+              <strong>Status:</strong> <span>Normal</span>
+            </div>
+            <div class="organelle-metric">
+              <strong>Autophagy Rate:</strong> <span>Basal</span>
+            </div>
+            <div class="organelle-metric">
+              <strong>pH:</strong> <span>4.5-5.0</span>
+            </div>
+            <div class="organelle-metric">
+              <strong>Function:</strong> <span>Degradation active</span>
+            </div>
+          </div>
+
+          <div class="organelle-card" id="organelle-nucleus">
+            <h5>🧬 Nucleus</h5>
+            <div class="organelle-metric">
+              <strong>DNA Damage:</strong> <span>None</span>
+            </div>
+            <div class="organelle-metric">
+              <strong>Chromatin State:</strong> <span>Normal</span>
+            </div>
+            <div class="organelle-metric">
+              <strong>Cell Cycle:</strong> <span>G1</span>
+            </div>
+            <div class="organelle-metric">
+              <strong>Checkpoints:</strong> <span>Functional</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Cellular Components -->
+      <div class="card">
+        <h4>Cellular Components</h4>
+        
+        <h5>Cell Membrane</h5>
+        <div class="component-list">
+          <div class="component-item">
+            <strong>EGFR:</strong> <span id="patho-egfr">Normal expression</span>
+          </div>
+          <div class="component-item">
+            <strong>HER2:</strong> <span id="patho-her2">Normal expression</span>
+          </div>
+          <div class="component-item">
+            <strong>Integrins:</strong> <span id="patho-integrins">Normal adhesion</span>
+          </div>
+          <div class="component-item">
+            <strong>E-cadherin:</strong> <span id="patho-ecadherin">Present (epithelial)</span>
+          </div>
+        </div>
+
+        <h5>Cytoskeleton</h5>
+        <div class="component-list">
+          <div class="component-item">
+            <strong>Motility:</strong> <span id="patho-motility">Low</span>
+          </div>
+          <div class="component-item">
+            <strong>Spindle:</strong> <span id="patho-spindle">Normal</span>
+          </div>
+          <div class="component-item">
+            <strong>Contact Inhibition:</strong> <span id="patho-contact">Active</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subcellular Localization -->
+      <div class="card">
+        <h4>Subcellular Localization</h4>
+        
+        <div class="localization-grid">
+          <div class="localization-item">
+            <strong>p53:</strong> 
+            <span id="loc-p53">Nuclear (active)</span>
+          </div>
+          <div class="localization-item">
+            <strong>FOXO:</strong>
+            <span id="loc-foxo">Nuclear (tumor suppression)</span>
+          </div>
+          <div class="localization-item">
+            <strong>β-catenin:</strong>
+            <span id="loc-betacatenin">Membrane (adhesion)</span>
+          </div>
+          <div class="localization-item">
+            <strong>NF-κB:</strong>
+            <span id="loc-nfkb">Cytoplasmic (inactive)</span>
+          </div>
+          <div class="localization-item">
+            <strong>AKT:</strong>
+            <span id="loc-akt">Cytoplasmic (inactive)</span>
+          </div>
+          <div class="localization-item">
+            <strong>mTOR:</strong>
+            <span id="loc-mtor">Cytoplasmic</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disease State Progression -->
+      <div class="card">
+        <h4>Disease State Assessment</h4>
+        
+        <div class="disease-progression">
+          <div class="progression-stage" id="stage-normal">
+            <div class="stage-indicator active"></div>
+            <strong>Normal</strong>
+            <p>Healthy tissue</p>
+          </div>
+          <div class="progression-arrow">→</div>
+          <div class="progression-stage" id="stage-hyperplasia">
+            <div class="stage-indicator"></div>
+            <strong>Hyperplasia</strong>
+            <p>Increased proliferation</p>
+          </div>
+          <div class="progression-arrow">→</div>
+          <div class="progression-stage" id="stage-dysplasia">
+            <div class="stage-indicator"></div>
+            <strong>Dysplasia</strong>
+            <p>Abnormal morphology</p>
+          </div>
+          <div class="progression-arrow">→</div>
+          <div class="progression-stage" id="stage-carcinoma-situ">
+            <div class="stage-indicator"></div>
+            <strong>Carcinoma in situ</strong>
+            <p>Malignant, contained</p>
+          </div>
+          <div class="progression-arrow">→</div>
+          <div class="progression-stage" id="stage-invasive">
+            <div class="stage-indicator"></div>
+            <strong>Invasive</strong>
+            <p>Basement membrane breach</p>
+          </div>
+        </div>
+
+        <div class="disease-details" id="disease-details">
+          <h5>Current Stage: <span id="current-stage">Normal</span></h5>
+          <p id="stage-description">Cells maintain normal architecture, growth control, and apoptosis regulation.</p>
+          
+          <h5>Hallmarks of Cancer Assessment:</h5>
+          <div class="hallmarks-grid">
+            <div class="hallmark-item">
+              <input type="checkbox" id="hallmark-1" disabled>
+              <label>Sustained proliferative signaling</label>
+            </div>
+            <div class="hallmark-item">
+              <input type="checkbox" id="hallmark-2" disabled>
+              <label>Evading growth suppressors</label>
+            </div>
+            <div class="hallmark-item">
+              <input type="checkbox" id="hallmark-3" disabled>
+              <label>Resisting cell death</label>
+            </div>
+            <div class="hallmark-item">
+              <input type="checkbox" id="hallmark-4" disabled>
+              <label>Enabling replicative immortality</label>
+            </div>
+            <div class="hallmark-item">
+              <input type="checkbox" id="hallmark-5" disabled>
+              <label>Inducing angiogenesis</label>
+            </div>
+            <div class="hallmark-item">
+              <input type="checkbox" id="hallmark-6" disabled>
+              <label>Activating invasion & metastasis</label>
+            </div>
+            <div class="hallmark-item">
+              <input type="checkbox" id="hallmark-7" disabled>
+              <label>Genome instability</label>
+            </div>
+            <div class="hallmark-item">
+              <input type="checkbox" id="hallmark-8" disabled>
+              <label>Tumor-promoting inflammation</label>
+            </div>
+            <div class="hallmark-item">
+              <input type="checkbox" id="hallmark-9" disabled>
+              <label>Deregulating cellular energetics</label>
+            </div>
+            <div class="hallmark-item">
+              <input type="checkbox" id="hallmark-10" disabled>
+              <label>Avoiding immune destruction</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Genetics -->
+      <div class="card">
+        <h4>Genetic Profile</h4>
+        <div id="genetic-profile">
+          <h5>Mutations:</h5>
+          <div id="mutations-list">
+            <p style="color: var(--green);">No mutations (Wild-type)</p>
+          </div>
+
+          <h5>Gene Expression Alterations:</h5>
+          <div id="expression-alterations">
+            <p style="color: var(--muted);">No alterations</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export Options -->
+      <div class="card">
+        <h4>Export Pathophysiology Report</h4>
+        <div class="btn-group">
+          <button class="btn btn-outline" onclick="exportPathophysiologyJSON()">
+            <span>📄</span> Export as JSON
+          </button>
+          <button class="btn btn-outline" onclick="exportPathophysiologyPDF()">
+            <span>📑</span> Export as PDF Report
+          </button>
+          <button class="btn btn-outline" onclick="shareToResearchCommunity()">
+            <span>🌐</span> Share to Research Community
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Add this CSS to the existing styles -->
+<style>
+/* Additional styles for cellular dynamics module */
+.sim-status {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+  padding: 16px;
+  background: var(--card);
+  border-radius: 8px;
+}
+
+.status-item {
+  font-size: 14px;
+}
+
+.status-item strong {
+  color: var(--accent);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.behavior-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.behavior-metric {
+  padding: 12px;
+  background: var(--card);
+  border-radius: 6px;
+  border-left: 3px solid var(--green);
+}
+
+.component-list {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.component-item {
+  padding: 8px 12px;
+  background: var(--card);
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.localization-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.localization-item {
+  padding: 12px;
+  background: var(--card);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.disease-progression {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 24px 0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.progression-stage {
+  text-align: center;
+  flex: 1;
+  min-width: 120px;
+}
+
+.stage-indicator {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--line);
+  margin: 0 auto 8px;
+  border: 3px solid var(--line);
+  transition: all 0.3s;
+}
+
+.stage-indicator.active {
+  background: var(--green);
+  border-color: var(--green);
+  box-shadow: 0 0 16px rgba(52, 211, 153, 0.5);
+}
+
+.progression-arrow {
+  font-size: 24px;
+  color: var(--muted);
+}
+
+.disease-details {
+  margin-top: 24px;
+  padding: 20px;
+  background: var(--card);
+  border-radius: 8px;
+}
+
+.hallmarks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.hallmark-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+}
+
+.hallmark-item input[type="checkbox"]:checked + label {
+  color: var(--red);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .disease-progression {
+    flex-direction: column;
+  }
+  
+  .progression-arrow {
+    transform: rotate(90deg);
+  }
+}
+</style>
